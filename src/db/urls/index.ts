@@ -1,7 +1,7 @@
 import { ICollection } from 'monk';
 
 import { Url } from './types';
-import db from '../dninit';
+import db from '../dbinit';
 
 let collection: ICollection<Url>;
 const Url = () => {
@@ -14,5 +14,6 @@ const Url = () => {
 };
 
 export { default as urlSchema } from './schema';
+export { Url as UrlT } from './types';
 
 export default Url();
