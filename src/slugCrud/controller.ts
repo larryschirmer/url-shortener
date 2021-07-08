@@ -31,6 +31,7 @@ const controller = {
         res.json(createdUrl);
       } catch (e) {
         if (e instanceof Error && e.message.includes('duplicate key error collection')) {
+          // TODO: organize error messages
           e.message = 'Slug in use. 🍔';
         }
         next(e);
