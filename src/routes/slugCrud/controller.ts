@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
-import urls, { urlSchema, UrlT } from '../db/urls';
+
+import urls, { urlSchema, UrlT } from '@db/urls';
 
 const controller = {
   '/:id': {

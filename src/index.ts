@@ -3,9 +3,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
+import slugCRUD from '@routes/slugCrud';
 import logger from '@utils/logger';
-
-import slugCRUD from './slugCrud';
 
 const app = express();
 
