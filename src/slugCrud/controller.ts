@@ -13,7 +13,7 @@ const controller = {
       } catch (e) {
         res.redirect(`/?error=Link%20not%20found`);
       }
-    },
+    }
   },
   '/url': {
     post: async (req: Request, res: Response, next: NextFunction) => {
@@ -23,21 +23,24 @@ const controller = {
         await urlSchema.validate({ name, url });
 
         // construction
-        const slug: string = (!!name ? name : nanoid(5)).toLowerCase();
+        const slug: string = (name ? name : nanoid(5)).toLowerCase();
         const newUrl: UrlT = { url, slug };
 
         // resolution
         const createdUrl = await urls.insert(newUrl);
         res.json(createdUrl);
       } catch (e) {
-        if (e instanceof Error && e.message.includes('duplicate key error collection')) {
+        if (
+          e instanceof Error &&
+          e.message.includes('duplicate key error collection')
+        ) {
           // TODO: organize error messages
           e.message = 'Slug in use. 🍔';
         }
         next(e);
       }
-    },
-  },
+    }
+  }
 };
 
 export default controller;
