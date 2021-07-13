@@ -12,6 +12,8 @@
     "resolveJsonModule": true,
     "baseUrl": "src",
     "paths": {
+      "@db/*": ["db/*"],
+      "@routes/*": ["routes/*"],
       "@utils/*": ["utils/*"]
     }
   },
