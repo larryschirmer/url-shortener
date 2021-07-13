@@ -21,6 +21,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     message: err.message,
     stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
   });
+  next();
 });
 
 const port = process.env.PORT || 1337;
