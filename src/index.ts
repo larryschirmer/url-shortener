@@ -3,6 +3,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
+import logger from 'utils/logger';
+
 import slugCRUD from './slugCrud';
 
 const app = express();
@@ -27,5 +29,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 const port = process.env.PORT || 1337;
 app.listen(port, () => {
   // TODO: setup project linting so console.log squiggles
-  console.log(`Listening at http://localhost:${port}`);
+  logger.info(`Listening at http://localhost:${port}`);
 });
