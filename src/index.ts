@@ -16,7 +16,6 @@ app.use(express.json());
 
 app.use('/', slugCRUD);
 
-// TODO: organize custom error handling in new file
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500);
   res.json({
@@ -28,6 +27,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 const port = process.env.PORT || 1337;
 app.listen(port, () => {
-  // TODO: setup project linting so console.log squiggles
   logger.info(`Listening at http://localhost:${port}`);
 });
