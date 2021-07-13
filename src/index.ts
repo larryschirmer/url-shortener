@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
-import logger from 'utils/logger';
+import logger from '@utils/logger';
 
 import slugCRUD from './slugCrud';
 
@@ -21,7 +21,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500);
   res.json({
     message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
+    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack
   });
   next();
 });
