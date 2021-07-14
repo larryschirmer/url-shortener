@@ -17,19 +17,21 @@ const controller = {
     }
   },
   '/url': {
-    post: async (req: Request, res: Response, next: NextFunction) => {
-      const { name, url } = req.body;
+    post: async ({ body }: Request, res: Response, next: NextFunction) => {
+      const { slug, url } = body;
       try {
-        // validation
-        await urlSchema.validate({ name, url });
-
         // construction
-        const slug: string = (name ? name : nanoid(5)).toLowerCase();
-        const newUrl: UrlT = { url, slug };
+        const newShortLink: Url = {
+          slug: slug || nanoid(5).toLowerCase(),
+          url
+        };
+
+        // validation
+        await urlSchema.validate(newShortLink);
 
         // resolution
-        const createdUrl = await urls.insert(newUrl);
-        res.json(createdUrl);
+        const createdShortLink = await urls.insert(newShortLink);
+        res.json(createdShortLink);
       } catch (e) {
         if (
           e instanceof Error &&

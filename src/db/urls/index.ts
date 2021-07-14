@@ -4,7 +4,7 @@ import { Url } from './types';
 import db from '../dbinit';
 
 let collection: ICollection<Url>;
-const Url = () => {
+const url = () => {
   if (collection) return collection;
 
   collection = db.get<Url>('urls');
@@ -14,6 +14,6 @@ const Url = () => {
 };
 
 export { default as urlSchema } from './schema';
-export { Url as UrlT } from './types';
+export { Url as Url } from './types';
 
-export default Url();
+export default url();

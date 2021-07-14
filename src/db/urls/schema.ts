@@ -1,9 +1,10 @@
 import * as yup from 'yup';
 
-export default yup.object().shape({
-  name: yup
-    .string()
-    .trim()
-    .matches(/[\w\-]/i),
-  url: yup.string().trim().url().required(),
+import { Url } from './types';
+
+const schema: yup.SchemaOf<Url> = yup.object({
+  slug: yup.string().trim().matches(/[\w-]/i).required(),
+  url: yup.string().trim().url().required()
 });
+
+export default schema;
