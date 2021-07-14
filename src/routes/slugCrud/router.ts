@@ -6,5 +6,6 @@ const slugCRUD = express.Router();
 slugCRUD.get('/:id', controller['/:id'].get);
 slugCRUD.post('/url', controller['/url'].post);
 slugCRUD.put('/url', controller['/url'].put);
+slugCRUD.delete('/url', controller['/url'].delete);
 
 export default slugCRUD;

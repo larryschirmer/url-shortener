@@ -79,6 +79,23 @@ const controller = {
       } catch (e) {
         next(e);
       }
+    },
+    delete: async ({ body }: Request, res: Response, next: NextFunction) => {
+      const { _id } = body;
+
+      try {
+        if (!_id) throw new Error('`_id` is required');
+
+        // fetch current short link
+        const shortLink = await urls.findOne({ _id });
+        if (!shortLink?._id) throw new Error('id is not in use');
+
+        // resolution
+        await urls.findOneAndDelete({ _id });
+        res.json({});
+      } catch (e) {
+        next(e);
+      }
     }
   }
 };
