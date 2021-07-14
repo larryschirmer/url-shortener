@@ -3,8 +3,9 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
-import slugCRUD from '@routes/slugCrud';
 import logger from '@utils/logger';
+
+import rootRouter from './router';
 
 const app = express();
 
@@ -13,7 +14,7 @@ app.use(morgan('tiny'));
 app.use(cors());
 app.use(express.json());
 
-app.use('/', slugCRUD);
+app.use('/', rootRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500);
