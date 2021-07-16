@@ -8,9 +8,17 @@ const controller = {
     get: async (req: Request, res: Response, next: NextFunction) => {
       const { slug } = req.params;
       try {
-        const url = await urls.findOne({ slug });
-        if (url) res.redirect(url.url);
-        else res.redirect(`/?error=${slug} not found`);
+        // fetch current short link
+        const shortLink = await urls.findOne({ slug });
+        if (!shortLink?._id) throw new Error('slug is not in use');
+
+        //resolution
+        const currentTime = new Date().toISOString();
+        await urls.findOneAndUpdate(
+          { slug },
+          { $push: { opens: currentTime } }
+        );
+        res.redirect(shortLink.url);
       } catch (e) {
         next(e);
       }
