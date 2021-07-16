@@ -4,26 +4,33 @@ import { nanoid } from 'nanoid';
 import urls, { urlSchema, Url } from '@db/urls';
 
 const controller = {
-  '/:id': {
-    get: async (req: Request, res: Response) => {
-      const { id: slug } = req.params;
-      try {
-        const url = await urls.findOne({ slug });
-        if (url) res.redirect(url.url);
-        else res.redirect(`/?error=${slug} not found`);
-      } catch (e) {
-        res.redirect(`/?error=Link%20not%20found`);
-      }
-    }
-  },
   '/url': {
+    get: async (req: Request, res: Response, next: NextFunction) => {
+      const { slug } = req.params;
+      try {
+        // fetch current short link
+        const shortLink = await urls.findOne({ slug });
+        if (!shortLink?._id) throw new Error('slug is not in use');
+
+        //resolution
+        const currentTime = new Date().toISOString();
+        await urls.findOneAndUpdate(
+          { slug },
+          { $push: { opens: currentTime } }
+        );
+        res.redirect(shortLink.url);
+      } catch (e) {
+        next(e);
+      }
+    },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
       const { slug, url } = body;
       try {
         // construction
         const newShortLink: Url = {
           slug: slug || nanoid(5).toLowerCase(),
-          url
+          url,
+          opens: []
         };
 
         // validation
@@ -55,7 +62,8 @@ const controller = {
         // construction
         const newShortLink: Url = {
           slug: slug || shortLink?.slug,
-          url: url || shortLink?.url
+          url: url || shortLink?.url,
+          opens: []
         };
 
         // validation

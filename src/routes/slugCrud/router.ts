@@ -3,7 +3,7 @@ import controller from './controller';
 
 const slugCRUD = express.Router();
 
-slugCRUD.get('/:id', controller['/:id'].get);
+slugCRUD.get('/url/:slug', controller['/url'].get);
 slugCRUD.post('/url', controller['/url'].post);
 slugCRUD.put('/url', controller['/url'].put);
 slugCRUD.delete('/url', controller['/url'].delete);
