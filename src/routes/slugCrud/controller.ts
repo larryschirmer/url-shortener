@@ -23,7 +23,8 @@ const controller = {
         // construction
         const newShortLink: Url = {
           slug: slug || nanoid(5).toLowerCase(),
-          url
+          url,
+          opens: []
         };
 
         // validation
@@ -55,7 +56,8 @@ const controller = {
         // construction
         const newShortLink: Url = {
           slug: slug || shortLink?.slug,
-          url: url || shortLink?.url
+          url: url || shortLink?.url,
+          opens: []
         };
 
         // validation
