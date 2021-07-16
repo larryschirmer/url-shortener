@@ -4,19 +4,17 @@ import { nanoid } from 'nanoid';
 import urls, { urlSchema, Url } from '@db/urls';
 
 const controller = {
-  '/:id': {
-    get: async (req: Request, res: Response) => {
-      const { id: slug } = req.params;
+  '/url': {
+    get: async (req: Request, res: Response, next: NextFunction) => {
+      const { slug } = req.params;
       try {
         const url = await urls.findOne({ slug });
         if (url) res.redirect(url.url);
         else res.redirect(`/?error=${slug} not found`);
       } catch (e) {
-        res.redirect(`/?error=Link%20not%20found`);
+        next(e);
       }
-    }
-  },
-  '/url': {
+    },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
       const { slug, url } = body;
       try {
