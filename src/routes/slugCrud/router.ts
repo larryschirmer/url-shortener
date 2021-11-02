@@ -3,9 +3,9 @@ import controller from './controller';
 
 const slugCRUD = express.Router();
 
-slugCRUD.get('/url/:slug', controller['/url'].get);
-slugCRUD.post('/url', controller['/url'].post);
-slugCRUD.put('/url', controller['/url'].put);
-slugCRUD.delete('/url', controller['/url'].delete);
+slugCRUD.get('/', controller['/'].get);
+slugCRUD.post('/', controller['/'].post);
+slugCRUD.put('/', controller['/'].put);
+slugCRUD.delete('/', controller['/'].delete);
 
 export default slugCRUD;

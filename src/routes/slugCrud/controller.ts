@@ -6,7 +6,7 @@ import urls, { urlSchema, Url } from '@db/urls';
 const isTag = (word: string) => word[0] === '#';
 
 const controller = {
-  '/url': {
+  '/': {
     get: async (req: Request, res: Response, next: NextFunction) => {
       const { slug } = req.params;
       try {
