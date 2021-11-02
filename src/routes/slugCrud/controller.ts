@@ -8,19 +8,12 @@ const isTag = (word: string) => word[0] === '#';
 const controller = {
   '/': {
     get: async (req: Request, res: Response, next: NextFunction) => {
-      const { slug } = req.params;
       try {
         // fetch
-        const shortLink = await urls.findOne({ slug });
-        if (!shortLink?._id) throw new Error('slug is not in use');
+        const shortLinks = await urls.find();
 
         //resolution
-        const currentTime = new Date().toISOString();
-        await urls.findOneAndUpdate(
-          { slug },
-          { $push: { opens: currentTime } }
-        );
-        res.redirect(shortLink.url);
+        res.json(shortLinks);
       } catch (e) {
         next(e);
       }
@@ -55,7 +48,13 @@ const controller = {
       }
     },
     put: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { _id, name: linkName = 'Unnamed', url, isListed = false, slug } = body;
+      const {
+        _id,
+        name: linkName = 'Unnamed',
+        url,
+        isListed = false,
+        slug
+      } = body;
 
       try {
         if (!_id) throw new Error('`_id` is required');
