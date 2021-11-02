@@ -3,12 +3,14 @@ import { nanoid } from 'nanoid';
 
 import urls, { urlSchema, Url } from '@db/urls';
 
+const isTag = (word: string) => word[0] === '#';
+
 const controller = {
   '/url': {
     get: async (req: Request, res: Response, next: NextFunction) => {
       const { slug } = req.params;
       try {
-        // fetch current short link
+        // fetch
         const shortLink = await urls.findOne({ slug });
         if (!shortLink?._id) throw new Error('slug is not in use');
 
@@ -24,12 +26,15 @@ const controller = {
       }
     },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { slug, url } = body;
+      const { name: linkName = 'Unnamed', slug, url, isListed = false } = body;
       try {
         // construction
         const newShortLink: Url = {
+          name: linkName,
           slug: slug || nanoid(5).toLowerCase(),
           url,
+          isListed,
+          tags: linkName.split(' ').filter(isTag),
           opens: []
         };
 
@@ -44,25 +49,28 @@ const controller = {
           e instanceof Error &&
           e.message.includes('duplicate key error collection')
         ) {
-          e.message = 'Slug in use. 🍔';
+          e.message = 'Slug in use.';
         }
         next(e);
       }
     },
     put: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { _id, url, slug } = body;
+      const { _id, name: linkName = 'Unnamed', url, isListed = false, slug } = body;
 
       try {
         if (!_id) throw new Error('`_id` is required');
 
-        // fetch current short link
+        // fetch
         const shortLink = await urls.findOne({ _id });
         if (!shortLink?._id) throw new Error('id is not in use');
 
         // construction
         const newShortLink: Url = {
+          name: linkName,
           slug: slug || shortLink?.slug,
           url: url || shortLink?.url,
+          isListed,
+          tags: linkName.split(' ').filter(isTag),
           opens: []
         };
 
