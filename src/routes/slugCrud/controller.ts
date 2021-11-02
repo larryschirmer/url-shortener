@@ -48,13 +48,7 @@ const controller = {
       }
     },
     put: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const {
-        _id,
-        name: linkName = 'Unnamed',
-        url,
-        isListed = false,
-        slug
-      } = body;
+      const { _id, name: linkName, url, isListed = false, slug } = body;
 
       try {
         if (!_id) throw new Error('`_id` is required');
@@ -65,12 +59,12 @@ const controller = {
 
         // construction
         const newShortLink: Url = {
-          name: linkName,
-          slug: slug || shortLink?.slug,
-          url: url || shortLink?.url,
-          isListed,
-          tags: linkName.split(' ').filter(isTag),
-          opens: []
+          name: linkName || shortLink.name,
+          slug: slug || shortLink.slug,
+          url: url || shortLink.url,
+          isListed: isListed || shortLink.isListed,
+          tags: (linkName || shortLink.name).split(' ').filter(isTag),
+          opens: shortLink.opens
         };
 
         // validation
