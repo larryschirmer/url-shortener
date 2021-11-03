@@ -3,7 +3,9 @@
 {
 	"name": "Node.js & TypeScript",
 	"runArgs": [
-		"--init"
+		"--init",
+		"--env-file",
+		".devcontainer/devcontainer.env"
 	],
 	"build": {
 		"dockerfile": "Dockerfile",
