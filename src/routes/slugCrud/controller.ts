@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
 
 import urls, { urlSchema, Url } from '@db/urls';
+import { compare } from '@utils/hash';
 
 const isTag = (word: string) => word[0] === '#';
 
@@ -18,9 +19,19 @@ const controller = {
         next(e);
       }
     },
-    post: async ({ body }: Request, res: Response, next: NextFunction) => {
+    post: async (
+      { body, cookies }: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
       const { name: linkName = 'Unnamed', slug, url, isListed = false } = body;
       try {
+        // validate cookie
+        const cookie = cookies['charming-smile'] as string;
+        if (!cookie) throw new Error('Not Logged In');
+        const isValidCookie = await compare(cookie);
+        if (!isValidCookie) throw new Error('Not Logged In');
+
         // construction
         const newShortLink: Url = {
           name: linkName,
@@ -47,10 +58,20 @@ const controller = {
         next(e);
       }
     },
-    put: async ({ body }: Request, res: Response, next: NextFunction) => {
+    put: async (
+      { body, cookies }: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
       const { _id, name: linkName, url, isListed = false, slug } = body;
 
       try {
+        // validate cookie
+        const cookie = cookies['charming-smile'] as string;
+        if (!cookie) throw new Error('Not Logged In');
+        const isValidCookie = await compare(cookie);
+        if (!isValidCookie) throw new Error('Not Logged In');
+
         if (!_id) throw new Error('`_id` is required');
 
         // fetch
@@ -89,10 +110,20 @@ const controller = {
         next(e);
       }
     },
-    delete: async ({ body }: Request, res: Response, next: NextFunction) => {
+    delete: async (
+      { body, cookies }: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
       const { _id } = body;
 
       try {
+        // validate cookie
+        const cookie = cookies['charming-smile'] as string;
+        if (!cookie) throw new Error('Not Logged In');
+        const isValidCookie = await compare(cookie);
+        if (!isValidCookie) throw new Error('Not Logged In');
+
         if (!_id) throw new Error('`_id` is required');
 
         // fetch current short link
