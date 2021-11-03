@@ -21,7 +21,9 @@ const controller = {
         const hashedPassword = await gen(body.password);
 
         //resolution
-        res.cookie('charming-smile', hashedPassword).send('cookie set'); //Sets name = express
+        res
+          .cookie('charming-smile', hashedPassword)
+          .json({ message: 'Successfully Signed In' });
       } catch (e) {
         next(e);
       }
