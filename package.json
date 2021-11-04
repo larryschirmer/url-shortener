@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build:live",
     "dev": "npm run build:live",
-    "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./build",
+    "build": "npm run tsc -- --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./build",
+    "start": "node ./build",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/index.ts",
     "lint": "eslint . --ext .ts",
     "tsc": "./node_modules/typescript/bin/tsc"
