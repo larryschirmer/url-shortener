@@ -4,6 +4,7 @@
 	"name": "Node.js & TypeScript",
 	"runArgs": [
 		"--init",
+		"--net=host",
 		"--env-file",
 		".devcontainer/devcontainer.env"
 	],
