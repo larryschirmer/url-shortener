@@ -24,7 +24,7 @@ const controller = {
       res: Response,
       next: NextFunction
     ) => {
-      const { name: linkName = 'Unnamed', slug, url, isListed = false } = body;
+      const { name: linkName = '', slug, url, isListed = false } = body;
       try {
         // validate cookie
         const cookie = cookies['charming-smile'] as string;
@@ -34,7 +34,7 @@ const controller = {
 
         // construction
         const newShortLink: Url = {
-          name: linkName,
+          name: linkName.length ? linkName : "Unnamed",
           slug: slug || nanoid(5).toLowerCase(),
           url,
           isListed,
