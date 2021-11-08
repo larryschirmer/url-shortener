@@ -7,7 +7,7 @@ import auth from '@routes/auth';
 const rootRouter = express.Router();
 
 rootRouter.use('/url', slugCRUD);
-rootRouter.use('/l', link);
+rootRouter.use('/', link);
 rootRouter.use('/auth', auth);
 
 export default rootRouter;
