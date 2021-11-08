@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
+import jwt from 'jsonwebtoken';
 
 import urls, { urlSchema, Url } from '@db/urls';
-import { gen, compare } from '@utils/hash';
 
 const password = process.env.MASTER_PASSWORD || '';
 
@@ -21,18 +21,17 @@ const controller = {
         next(e);
       }
     },
-    post: async (
-      { body, cookies }: Request,
-      res: Response,
-      next: NextFunction
-    ) => {
+    post: async ({ body }: Request, res: Response, next: NextFunction) => {
       const { name: linkName = '', slug, url, isListed = false } = body;
       try {
-        // validate cookie
-        const cookie = cookies['charming-smile'] as string;
-        if (!cookie) throw new Error('Not Logged In');
-        const isValidCookie = await compare(cookie);
-        if (!isValidCookie) throw new Error('Not Logged In');
+        // validate token
+        if (!body.token) throw new Error('Not Logged In');
+        const secret = process.env.TOKEN_SECRET || '';
+        try {
+          jwt.verify(body.token, secret);
+        } catch (e) {
+          throw new Error('Not Logged In');
+        }
 
         // construction
         const newShortLink: Url = {
@@ -49,14 +48,10 @@ const controller = {
 
         // resolution
         const createdShortLink = await urls.insert(newShortLink);
-        const hashedPassword = await gen(password);
-        res
-          .cookie('charming-smile', hashedPassword, {
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production'
-          })
-          .json(createdShortLink);
+        const token = jwt.sign({ user: body.user }, secret, {
+          expiresIn: '1d'
+        });
+        res.json({ ...createdShortLink, token });
       } catch (e) {
         if (
           e instanceof Error &&
@@ -67,19 +62,18 @@ const controller = {
         next(e);
       }
     },
-    put: async (
-      { body, cookies }: Request,
-      res: Response,
-      next: NextFunction
-    ) => {
+    put: async ({ body }: Request, res: Response, next: NextFunction) => {
       const { _id, name: linkName, url, isListed = false, slug } = body;
 
       try {
-        // validate cookie
-        const cookie = cookies['charming-smile'] as string;
-        if (!cookie) throw new Error('Not Logged In');
-        const isValidCookie = await compare(cookie);
-        if (!isValidCookie) throw new Error('Not Logged In');
+        // validate token
+        if (!body.token) throw new Error('Not Logged In');
+        const secret = process.env.TOKEN_SECRET || '';
+        try {
+          jwt.verify(body.token, secret);
+        } catch (e) {
+          throw new Error('Not Logged In');
+        }
 
         if (!_id) throw new Error('`_id` is required');
 
@@ -114,31 +108,27 @@ const controller = {
           { _id },
           { $set: newShortLink }
         );
-        const hashedPassword = await gen(password);
-        res
-          .cookie('charming-smile', hashedPassword, {
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production'
-          })
-          .json(updatedShortLink);
+
+        const token = jwt.sign({ user: body.user }, secret, {
+          expiresIn: '1d'
+        });
+        res.json({ ...updatedShortLink, token });
       } catch (e) {
         next(e);
       }
     },
-    delete: async (
-      { body, cookies }: Request,
-      res: Response,
-      next: NextFunction
-    ) => {
+    delete: async ({ body }: Request, res: Response, next: NextFunction) => {
       const { _id } = body;
 
       try {
-        // validate cookie
-        const cookie = cookies['charming-smile'] as string;
-        if (!cookie) throw new Error('Not Logged In');
-        const isValidCookie = await compare(cookie);
-        if (!isValidCookie) throw new Error('Not Logged In');
+        // validate token
+        if (!body.token) throw new Error('Not Logged In');
+        const secret = process.env.TOKEN_SECRET || '';
+        try {
+          jwt.verify(body.token, secret);
+        } catch (e) {
+          throw new Error('Not Logged In');
+        }
 
         if (!_id) throw new Error('`_id` is required');
 
@@ -148,14 +138,10 @@ const controller = {
 
         // resolution
         await urls.findOneAndDelete({ _id });
-        const hashedPassword = await gen(password);
-        res
-          .cookie('charming-smile', hashedPassword, {
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production'
-          })
-          .json({});
+        const token = jwt.sign({ user: body.user }, secret, {
+          expiresIn: '1d'
+        });
+        res.json({ token });
       } catch (e) {
         next(e);
       }

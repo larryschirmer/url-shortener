@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-
-import { gen } from '@utils/hash';
+import jwt from 'jsonwebtoken';
 
 const user = process.env.MASTER_USER || '';
 const password = process.env.MASTER_PASSWORD || '';
@@ -18,19 +17,13 @@ const controller = {
             .json({ error: 'provided user or password is not correct' });
         }
 
-        const hashedPassword = await gen(body.password);
+        const secret = process.env.TOKEN_SECRET || '';
+        const token = jwt.sign({ user: body.user }, secret, {
+          expiresIn: '1d'
+        });
 
         //resolution
-        res
-          .setHeader('Access-Control-Allow-Headers', 'Set-Cookie')
-          .cookie('charming-smile', hashedPassword, {
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            domain: process.env.DOMAIN,
-            sameSite: 'none',
-          })
-          .json({ message: 'Successfully Signed In' });
+        res.json({ token });
       } catch (e) {
         next(e);
       }
