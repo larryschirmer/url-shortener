@@ -26,7 +26,9 @@ const controller = {
           .cookie('charming-smile', hashedPassword, {
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production'
+            secure: process.env.NODE_ENV === 'production',
+            domain: process.env.DOMAIN,
+            sameSite: 'none',
           })
           .json({ message: 'Successfully Signed In' });
       } catch (e) {
