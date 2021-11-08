@@ -22,7 +22,10 @@ const controller = {
 
         //resolution
         res
-          .cookie('charming-smile', hashedPassword)
+          .cookie('charming-smile', hashedPassword, {
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+            httpOnly: true
+          })
           .json({ message: 'Successfully Signed In' });
       } catch (e) {
         next(e);
