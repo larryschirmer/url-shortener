@@ -22,6 +22,7 @@ const controller = {
 
         //resolution
         res
+          .setHeader('Access-Control-Allow-Headers', 'Set-Cookie')
           .cookie('charming-smile', hashedPassword, {
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
             httpOnly: true,
