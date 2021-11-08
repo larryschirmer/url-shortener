@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
 
 import urls, { urlSchema, Url } from '@db/urls';
-import { compare } from '@utils/hash';
+import { gen, compare } from '@utils/hash';
+
+const password = process.env.MASTER_PASSWORD || '';
 
 const isTag = (word: string) => word[0] === '#';
 
@@ -34,7 +36,7 @@ const controller = {
 
         // construction
         const newShortLink: Url = {
-          name: linkName.length ? linkName : "Unnamed",
+          name: linkName.length ? linkName : 'Unnamed',
           slug: slug || nanoid(5).toLowerCase(),
           url,
           isListed,
@@ -47,7 +49,14 @@ const controller = {
 
         // resolution
         const createdShortLink = await urls.insert(newShortLink);
-        res.json(createdShortLink);
+        const hashedPassword = await gen(password);
+        res
+          .cookie('charming-smile', hashedPassword, {
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production'
+          })
+          .json(createdShortLink);
       } catch (e) {
         if (
           e instanceof Error &&
@@ -105,7 +114,14 @@ const controller = {
           { _id },
           { $set: newShortLink }
         );
-        res.json(updatedShortLink);
+        const hashedPassword = await gen(password);
+        res
+          .cookie('charming-smile', hashedPassword, {
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production'
+          })
+          .json(updatedShortLink);
       } catch (e) {
         next(e);
       }
@@ -132,7 +148,14 @@ const controller = {
 
         // resolution
         await urls.findOneAndDelete({ _id });
-        res.json({});
+        const hashedPassword = await gen(password);
+        res
+          .cookie('charming-smile', hashedPassword, {
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production'
+          })
+          .json({});
       } catch (e) {
         next(e);
       }
