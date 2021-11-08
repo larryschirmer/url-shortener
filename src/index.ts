@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -10,9 +10,18 @@ import rootRouter from './router';
 
 const app = express();
 
+const apiDomain = process.env.API_DOMAIN || 'http://localhost:1337';
+const frontendDomain = process.env.FRONTEND_DOMAIN || 'http://localhost:3000';
+
+const corsOptions: CorsOptions = {
+  origin: [apiDomain, frontendDomain],
+  credentials: true,
+  exposedHeaders: ['set-cookie']
+};
+
 app.use(helmet());
 app.use(morgan('tiny'));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
