@@ -49,7 +49,7 @@ const controller = {
         // resolution
         const createdShortLink = await urls.insert(newShortLink);
         const token = jwt.sign({ user: body.user }, secret, {
-          expiresIn: '1d'
+          expiresIn: '7d'
         });
         res.json({ ...createdShortLink, token });
       } catch (e) {
@@ -110,7 +110,7 @@ const controller = {
         );
 
         const token = jwt.sign({ user: body.user }, secret, {
-          expiresIn: '1d'
+          expiresIn: '7d'
         });
         res.json({ ...updatedShortLink, token });
       } catch (e) {
@@ -139,7 +139,7 @@ const controller = {
         // resolution
         await urls.findOneAndDelete({ _id });
         const token = jwt.sign({ user: body.user }, secret, {
-          expiresIn: '1d'
+          expiresIn: '7d'
         });
         res.json({ token });
       } catch (e) {
