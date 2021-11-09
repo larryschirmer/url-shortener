@@ -13,7 +13,6 @@
     "baseUrl": "src",
     "paths": {
       "@db/*": ["db/*"],
-      "@middleware/*": ["middleware/*"],
       "@routes/*": ["routes/*"],
       "@utils/*": ["utils/*"]
     }
