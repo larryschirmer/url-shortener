@@ -1,24 +1,17 @@
 import express, { Request, Response, NextFunction } from 'express';
-import cors, { CorsOptions } from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
+import { dynamicCors } from '@middleware/index';
 import logger from '@utils/logger';
 
 import rootRouter from './router';
 
 const app = express();
 
-const apiDomain = process.env.API_DOMAIN || 'http://localhost:1337';
-const frontendDomain = process.env.FRONTEND_DOMAIN || 'http://localhost:3000';
-
-const corsOptions: CorsOptions = {
-  origin: [apiDomain, frontendDomain]
-};
-
 app.use(helmet());
 app.use(morgan('tiny'));
-app.use(cors(corsOptions));
+app.use(dynamicCors);
 app.use(express.json());
 
 app.use('/', rootRouter);
