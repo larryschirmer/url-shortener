@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
-import jwt from 'jsonwebtoken';
 
 import urls, { urlSchema, Url } from '@db/urls';
 
-const password = process.env.MASTER_PASSWORD || '';
+import { tokenGenerate, tokenValidate } from '@utils/token';
 
 const isTag = (word: string) => word[0] === '#';
 
@@ -26,12 +25,7 @@ const controller = {
       try {
         // validate token
         if (!body.token) throw new Error('Not Logged In');
-        const secret = process.env.TOKEN_SECRET || '';
-        try {
-          jwt.verify(body.token, secret);
-        } catch (e) {
-          throw new Error('Not Logged In');
-        }
+        tokenValidate(body.token);
 
         // construction
         const newShortLink: Url = {
@@ -48,9 +42,7 @@ const controller = {
 
         // resolution
         const createdShortLink = await urls.insert(newShortLink);
-        const token = jwt.sign({ user: body.user }, secret, {
-          expiresIn: '7d'
-        });
+        const token = tokenGenerate({ user: body.user });
         res.json({ ...createdShortLink, token });
       } catch (e) {
         if (
@@ -68,12 +60,7 @@ const controller = {
       try {
         // validate token
         if (!body.token) throw new Error('Not Logged In');
-        const secret = process.env.TOKEN_SECRET || '';
-        try {
-          jwt.verify(body.token, secret);
-        } catch (e) {
-          throw new Error('Not Logged In');
-        }
+        tokenValidate(body.token);
 
         if (!_id) throw new Error('`_id` is required');
 
@@ -109,9 +96,7 @@ const controller = {
           { $set: newShortLink }
         );
 
-        const token = jwt.sign({ user: body.user }, secret, {
-          expiresIn: '7d'
-        });
+        const token = tokenGenerate({ user: body.user });
         res.json({ ...updatedShortLink, token });
       } catch (e) {
         next(e);
@@ -123,12 +108,7 @@ const controller = {
       try {
         // validate token
         if (!body.token) throw new Error('Not Logged In');
-        const secret = process.env.TOKEN_SECRET || '';
-        try {
-          jwt.verify(body.token, secret);
-        } catch (e) {
-          throw new Error('Not Logged In');
-        }
+        tokenValidate(body.token);
 
         if (!_id) throw new Error('`_id` is required');
 
@@ -138,9 +118,7 @@ const controller = {
 
         // resolution
         await urls.findOneAndDelete({ _id });
-        const token = jwt.sign({ user: body.user }, secret, {
-          expiresIn: '7d'
-        });
+        const token = tokenGenerate({ user: body.user });
         res.json({ token });
       } catch (e) {
         next(e);
