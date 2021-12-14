@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
+import { Types } from 'mongoose';
 
+import User from '@db/users';
 import Url, { urlSchema, TUrl } from '@db/urls';
 
 import { tokenGenerate, tokenValidate, decodeUser } from '@utils/token';
@@ -28,13 +30,16 @@ const controller = {
         tokenValidate(token);
 
         // construction
+        const userName = decodeUser(token) ?? '';
+        const user = await User.findOne({ name: userName });
         const newShortLink: TUrl = {
           name: linkName.length ? linkName : 'Unnamed',
           slug: slug || nanoid(5).toLowerCase(),
           url,
           isListed,
           tags: linkName.split(' ').filter(isTag),
-          opens: []
+          opens: [],
+          user: new Types.ObjectId(user?._id),
         };
 
         // validation
@@ -42,7 +47,6 @@ const controller = {
 
         // resolution
         const createdShortLink = await Url.create(newShortLink);
-        const userName = decodeUser(token) ?? '';
         const newToken = tokenGenerate({ name: userName });
         res.json({ ...createdShortLink.toJSON(), token: newToken });
       } catch (e) {
@@ -59,8 +63,8 @@ const controller = {
       const { _id, name: linkName, url, isListed = false, slug, token } = body;
       try {
         // validate token
-        if (!body.token) throw new Error('Not Logged In');
-        tokenValidate(body.token);
+        if (!token) throw new Error('Not Logged In');
+        tokenValidate(token);
 
         if (!_id) throw new Error('`_id` is required');
 
@@ -75,7 +79,8 @@ const controller = {
           url: url || shortLink.url,
           isListed: isListed || shortLink.isListed,
           tags: (linkName || shortLink.name).split(' ').filter(isTag),
-          opens: shortLink.opens
+          opens: shortLink.opens,
+          user: shortLink.user,
         };
 
         // validation
