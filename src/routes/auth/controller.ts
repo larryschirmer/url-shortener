@@ -9,22 +9,22 @@ const controller = {
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
       try {
         // validation
-        if (!body.user || !body.password) {
+        if (!body.name || !body.password) {
           return res.status(400).json({ error: 'missing user or password' });
         }
-        const user = await User.findOne({ user: body.user });
+        const user = await User.findOne({ name: body.name });
         const isValidPassword = await compare(
           body.password,
           user?.password ?? ''
         );
-        if (body.user !== user?.name || !isValidPassword) {
+        if (body.name !== user?.name || !isValidPassword) {
           return res
             .status(400)
             .json({ error: 'provided user or password is not correct' });
         }
 
         const secret = process.env.TOKEN_SECRET || '';
-        const token = jwt.sign({ user: body.user }, secret, {
+        const token = jwt.sign({ name: body.name }, secret, {
           expiresIn: '1y'
         });
 

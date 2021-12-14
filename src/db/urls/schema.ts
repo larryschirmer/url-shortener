@@ -9,8 +9,7 @@ const schema: yup.SchemaOf<Url> = yup.object({
   isListed: yup.boolean().required(),
   tags: yup.array().of(yup.string().required()),
   opens: yup.array().of(yup.string().required()),
-  user: yup.string(),
-  isAdmin: yup.boolean(),
+  user: yup.string()
 });
 
 export default schema;

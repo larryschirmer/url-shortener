@@ -8,5 +8,4 @@ export type Url = {
   tags: string[];
   opens: string[];
   user?: ObjectId | string;
-  isAdmin?: boolean;
 };

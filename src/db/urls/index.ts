@@ -9,8 +9,7 @@ const UrlSchema = new Schema<Url>({
   isListed: { type: Boolean, required: true },
   tags: { type: [String], required: true },
   opens: { type: [String], required: true },
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
-  isAdmin: { type: Boolean },
+  user: { type: Schema.Types.ObjectId, ref: 'User' }
 });
 
 export { default as urlSchema } from './schema';

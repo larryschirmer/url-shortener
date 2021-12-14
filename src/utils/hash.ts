@@ -6,8 +6,10 @@ export const gen = async (password: string): Promise<string> => {
   return hash;
 };
 
-export const compare = async (hash: string): Promise<boolean> => {
-  const password = process.env.MASTER_PASSWORD || '';
+export const compare = async (
+  password: string,
+  hash: string
+): Promise<boolean> => {
   const result = await bcrypt.compare(password, hash);
   return result;
 };

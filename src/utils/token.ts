@@ -15,3 +15,11 @@ export const tokenValidate = (token: string) => {
     throw new Error('Not Logged In');
   }
 };
+
+export const decodeUser = (token: string): string | undefined => {
+  tokenValidate(token);
+  const decoded = jwt.decode(token);
+  if (typeof decoded === 'string' || decoded === null)
+    throw new Error('Not Logged In');
+  return decoded.name;
+};
