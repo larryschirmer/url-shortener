@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongoose';
+
 export type Url = {
   name: string;
   slug: string;
@@ -5,4 +7,6 @@ export type Url = {
   isListed: boolean;
   tags: string[];
   opens: string[];
+  user?: ObjectId | string;
+  isAdmin?: boolean;
 };

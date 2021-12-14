@@ -1,18 +1,17 @@
-import monk, { IMonkManager } from 'monk';
+import { connect } from 'mongoose';
 
 import logger from '@utils/logger';
 
-let connection: Promise<IMonkManager> & IMonkManager;
-const db = () => {
-  if (connection) return connection;
-
-  connection = monk(`${process.env.MONGO_URI || 'localhost'}/urlShortener?retryWrites=true&w=majority`);
-
-  connection.catch(() => {
-    logger.error('db failed to connect');
-  });
-
-  return connection;
+const dbConnect = async () => {
+  try {
+    await connect(
+      `${
+        process.env.MONGO_URI || 'localhost'
+      }/urlShortener`
+    );
+  } catch (e) {
+    logger.error(e);
+  }
 };
 
-export default db();
+export default dbConnect;

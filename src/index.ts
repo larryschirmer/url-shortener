@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 
 import logger from '@utils/logger';
+import dbConnect from '@db/dbinit';
 
 import rootRouter from './router';
 
@@ -29,3 +30,5 @@ const port = process.env.PORT || 1337;
 app.listen(port, () => {
   logger.info(`Listening at http://localhost:${port}`);
 });
+
+dbConnect();

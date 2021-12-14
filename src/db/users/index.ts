@@ -1,19 +1,13 @@
-import { ICollection } from 'monk';
+import mongoose, { Schema } from 'mongoose';
 
 import { User } from './types';
-import db from '../dbinit';
 
-let collection: ICollection<User>;
-const url = () => {
-  if (collection) return collection;
+const UserSchema = new Schema<User>({
+  name: { type: String, required: true, unique: true, index: true },
+  password: { type: String, required: true },
+});
 
-  collection = db.get<User>('users');
-  collection.createIndex('name', { unique: true });
-
-  return collection;
-};
-
-export { default as urlSchema } from './schema';
+export { default as userSchema } from './schema';
 export type { User } from './types';
 
-export default url();
+export default mongoose.model<User>('User', UserSchema);
