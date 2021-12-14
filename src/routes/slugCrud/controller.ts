@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 
 import Url, { urlSchema, TUrl } from '@db/urls';
 
-import { tokenGenerate, tokenValidate } from '@utils/token';
+import { tokenGenerate, tokenValidate, decodeUser } from '@utils/token';
 
 const isTag = (word: string) => word[0] === '#';
 
@@ -21,11 +21,11 @@ const controller = {
       }
     },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { name: linkName = '', slug, url, isListed = false } = body;
+      const { name: linkName = '', slug, url, isListed = false, token } = body;
       try {
         // validate token
-        if (!body.token) throw new Error('Not Logged In');
-        tokenValidate(body.token);
+        if (!token) throw new Error('Not Logged In');
+        tokenValidate(token);
 
         // construction
         const newShortLink: TUrl = {
@@ -42,8 +42,9 @@ const controller = {
 
         // resolution
         const createdShortLink = await Url.create(newShortLink);
-        const token = tokenGenerate({ user: body.user });
-        res.json({ ...createdShortLink, token });
+        const userName = decodeUser(token) ?? '';
+        const newToken = tokenGenerate({ name: userName });
+        res.json({ ...createdShortLink.toJSON(), token: newToken });
       } catch (e) {
         if (
           e instanceof Error &&
@@ -55,8 +56,7 @@ const controller = {
       }
     },
     put: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { _id, name: linkName, url, isListed = false, slug } = body;
-
+      const { _id, name: linkName, url, isListed = false, slug, token } = body;
       try {
         // validate token
         if (!body.token) throw new Error('Not Logged In');
@@ -94,21 +94,22 @@ const controller = {
         const updatedShortLink = await Url.findOneAndUpdate(
           { _id },
           { $set: newShortLink }
-        );
+        ).lean();
 
-        const token = tokenGenerate({ user: body.user });
-        res.json({ ...updatedShortLink, token });
+        const userName = decodeUser(token) ?? '';
+        const newToken = tokenGenerate({ name: userName });
+        res.json({ ...updatedShortLink, token: newToken });
       } catch (e) {
         next(e);
       }
     },
     delete: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { _id } = body;
+      const { _id, token } = body;
 
       try {
         // validate token
-        if (!body.token) throw new Error('Not Logged In');
-        tokenValidate(body.token);
+        if (!token) throw new Error('Not Logged In');
+        tokenValidate(token);
 
         if (!_id) throw new Error('`_id` is required');
 
@@ -118,8 +119,9 @@ const controller = {
 
         // resolution
         await Url.findOneAndDelete({ _id });
-        const token = tokenGenerate({ user: body.user });
-        res.json({ token });
+        const userName = decodeUser(token) ?? '';
+        const newToken = tokenGenerate({ name: userName });
+        res.json({ token: newToken });
       } catch (e) {
         next(e);
       }

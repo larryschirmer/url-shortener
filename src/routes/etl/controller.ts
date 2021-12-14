@@ -8,12 +8,13 @@ import User, { TUser } from '@db/users';
 const controller = {
   '/createUser': {
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
+      const { name, password, token } = body;
       try {
         // validation
-        if (!body.token) {
+        if (!token) {
           return res.status(400).json({ error: 'Not Logged In' });
         }
-        const userName = decodeUser(body.token);
+        const userName = decodeUser(token);
         const user = (await User.findOne({ name: userName })) ?? ({} as TUser);
         if (!user.isAdmin) {
           return res
@@ -22,7 +23,6 @@ const controller = {
         }
 
         // validate new user info
-        const { name, password } = body;
         if (
           !name ||
           !password ||
