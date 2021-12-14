@@ -19,7 +19,7 @@ const controller = {
 
         const secret = process.env.TOKEN_SECRET || '';
         const token = jwt.sign({ user: body.user }, secret, {
-          expiresIn: '7d'
+          expiresIn: '1y'
         });
 
         //resolution
