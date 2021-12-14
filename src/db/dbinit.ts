@@ -4,13 +4,9 @@ import logger from '@utils/logger';
 
 const dbConnect = async () => {
   try {
-    await connect(
-      `${
-        process.env.MONGO_URI || 'localhost'
-      }/urlShortener`
-    );
+    await connect(`${process.env.MONGO_URI}/urlShortener`);
   } catch (e) {
-    logger.error(e);
+    logger.error('Error connecting to database', e);
   }
 };
 

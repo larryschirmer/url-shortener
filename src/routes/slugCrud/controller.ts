@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
 
-import urls, { urlSchema, Url } from '@db/urls';
+import Url, { urlSchema, TUrl } from '@db/urls';
 
 import { tokenGenerate, tokenValidate } from '@utils/token';
 
@@ -12,7 +12,7 @@ const controller = {
     get: async (req: Request, res: Response, next: NextFunction) => {
       try {
         // fetch
-        const shortLinks = await urls.find();
+        const shortLinks = await Url.find();
 
         //resolution
         res.json(shortLinks);
@@ -28,7 +28,7 @@ const controller = {
         tokenValidate(body.token);
 
         // construction
-        const newShortLink: Url = {
+        const newShortLink: TUrl = {
           name: linkName.length ? linkName : 'Unnamed',
           slug: slug || nanoid(5).toLowerCase(),
           url,
@@ -41,7 +41,7 @@ const controller = {
         await urlSchema.validate(newShortLink);
 
         // resolution
-        const createdShortLink = await urls.insert(newShortLink);
+        const createdShortLink = await Url.create(newShortLink);
         const token = tokenGenerate({ user: body.user });
         res.json({ ...createdShortLink, token });
       } catch (e) {
@@ -65,11 +65,11 @@ const controller = {
         if (!_id) throw new Error('`_id` is required');
 
         // fetch
-        const shortLink = await urls.findOne({ _id });
+        const shortLink = await Url.findOne({ _id });
         if (!shortLink?._id) throw new Error('id is not in use');
 
         // construction
-        const newShortLink: Url = {
+        const newShortLink: TUrl = {
           name: linkName || shortLink.name,
           slug: slug || shortLink.slug,
           url: url || shortLink.url,
@@ -80,7 +80,7 @@ const controller = {
 
         // validation
         await urlSchema.validate(newShortLink);
-        const conflictingShortLink = await urls.findOne({
+        const conflictingShortLink = await Url.findOne({
           slug: newShortLink.slug
         });
         if (
@@ -91,7 +91,7 @@ const controller = {
         }
 
         // resolution
-        const updatedShortLink = await urls.findOneAndUpdate(
+        const updatedShortLink = await Url.findOneAndUpdate(
           { _id },
           { $set: newShortLink }
         );
@@ -113,11 +113,11 @@ const controller = {
         if (!_id) throw new Error('`_id` is required');
 
         // fetch current short link
-        const shortLink = await urls.findOne({ _id });
+        const shortLink = await Url.findOne({ _id });
         if (!shortLink?._id) throw new Error('id is not in use');
 
         // resolution
-        await urls.findOneAndDelete({ _id });
+        await Url.findOneAndDelete({ _id });
         const token = tokenGenerate({ user: body.user });
         res.json({ token });
       } catch (e) {

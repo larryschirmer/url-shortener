@@ -8,6 +8,6 @@ const UserSchema = new Schema<User>({
 });
 
 export { default as userSchema } from './schema';
-export type { User } from './types';
+export type { User as TUser } from './types';
 
 export default mongoose.model<User>('User', UserSchema);

@@ -8,6 +8,7 @@ import dbConnect from '@db/dbinit';
 
 import rootRouter from './router';
 
+dbConnect();
 const app = express();
 
 app.use(helmet());
@@ -31,4 +32,3 @@ app.listen(port, () => {
   logger.info(`Listening at http://localhost:${port}`);
 });
 
-dbConnect();
