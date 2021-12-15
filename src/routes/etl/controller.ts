@@ -2,28 +2,15 @@ import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
 import { gen } from '@utils/hash';
-import { decodeUser } from '@utils/token';
 
 import User, { TUser } from '@db/users';
-import Url, { urlSchema, TUrl } from '@db/urls';
+import Url from '@db/urls';
 
 const controller = {
   '/createUser': {
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { name, password, token } = body;
+      const { name, password } = body;
       try {
-        // validation
-        if (!token) {
-          return res.status(400).json({ error: 'Not Logged In' });
-        }
-        const userName = decodeUser(token);
-        const user = (await User.findOne({ name: userName })) ?? ({} as TUser);
-        if (!user.isAdmin) {
-          return res
-            .status(400)
-            .json({ error: 'provided user or password is not correct' });
-        }
-
         // validate new user info
         if (
           !name ||
@@ -52,20 +39,8 @@ const controller = {
   },
   '/addUserToLinks': {
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { userId, token } = body;
+      const { userId } = body;
       try {
-        // validation
-        if (!token) {
-          return res.status(400).json({ error: 'Not Logged In' });
-        }
-        const userName = decodeUser(token);
-        const user = (await User.findOne({ name: userName })) ?? ({} as TUser);
-        if (!user.isAdmin) {
-          return res
-            .status(400)
-            .json({ error: 'Not Authorized' });
-        }
-
         // validate that provided user exists
         if (!userId || typeof userId !== 'string')
           return res.status(400).json({ error: 'user is a required field' });

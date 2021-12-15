@@ -1,9 +1,19 @@
 import express from 'express';
 import controller from './controller';
 
-const auth = express.Router();
+const etl = express.Router();
 
-auth.post('/createUser', controller['/createUser'].post);
-auth.post('/addUserToLinks', controller['/addUserToLinks'].post);
+import auth from '@middleware/auth';
 
-export default auth;
+etl.post(
+  '/createUser',
+  auth({ protect: true, isAdmin: true }),
+  controller['/createUser'].post
+);
+etl.post(
+  '/addUserToLinks',
+  auth({ protect: true, isAdmin: true }),
+  controller['/addUserToLinks'].post
+);
+
+export default etl;
