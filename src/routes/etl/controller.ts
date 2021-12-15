@@ -63,7 +63,7 @@ const controller = {
         if (!user.isAdmin) {
           return res
             .status(400)
-            .json({ error: 'provided user or password is not correct' });
+            .json({ error: 'Not Authorized' });
         }
 
         // validate that provided user exists

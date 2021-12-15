@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 const secret = process.env.TOKEN_SECRET || '';
 
 export const tokenGenerate = (body: { name: string }) => {
-  return jwt.sign({ user: body.name }, secret, {
+  return jwt.sign({ name: body.name }, secret, {
     expiresIn: '1y'
   });
 };

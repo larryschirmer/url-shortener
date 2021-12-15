@@ -2,38 +2,26 @@ import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
 import { Types } from 'mongoose';
 
-import User, { TUser } from '@db/users';
+import User from '@db/users';
 import Url, { urlSchema, TUrl } from '@db/urls';
 
 import { tokenGenerate, tokenValidate, decodeUser } from '@utils/token';
+import { getUserLinks, getAdminLinks } from './utils';
 
 const isTag = (word: string) => word[0] === '#';
 
 const controller = {
   '/': {
     get: async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.body.user;
       try {
         // fetch
-        type PopulatedUrl = TUrl & { _id: string, user?: TUser };
-
-        let shortLinks: PopulatedUrl[] = [];
-        try {
-          shortLinks = await Url.find({ isListed: true })
-            .populate<PopulatedUrl[]>('user', 'isAdmin')
-            .orFail()
-            .then((links: PopulatedUrl[]) => {
-              return links
-                .filter((link: PopulatedUrl) => link?.user?.isAdmin ?? false)
-                .map(({ _id, name, slug, url, isListed, tags, opens }) => {
-                  return { _id, name, slug, url, isListed, tags, opens };
-                });
-            });
-        } catch (e) {
-          shortLinks = [];
-        }
+        let links: TUrl[] = [];
+        if (user) links = await getUserLinks(user._id);
+        else links = await getAdminLinks();
 
         //resolution
-        res.json(shortLinks);
+        res.json(links);
       } catch (e) {
         next(e);
       }
@@ -41,10 +29,6 @@ const controller = {
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
       const { name: linkName = '', slug, url, isListed = false, token } = body;
       try {
-        // validate token
-        if (!token) throw new Error('Not Logged In');
-        tokenValidate(token);
-
         // construction
         const userName = decodeUser(token) ?? '';
         const user = await User.findOne({ name: userName });
