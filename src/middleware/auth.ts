@@ -12,11 +12,11 @@ const auth =
 
     try {
       // validate token
+      if (protect) {
+        if (!token) throw new Error('Not Logged In');
+        tokenValidate(token);
+      }
       if (token) {
-        if (protect) {
-          if (!token) throw new Error('Not Logged In');
-          tokenValidate(token);
-        }
         const userName = decodeUser(token);
         const user = (await User.findOne({ name: userName })) ?? ({} as TUser);
         req.body.user = user;
@@ -25,7 +25,8 @@ const auth =
 
       next();
     } catch (e) {
-      res.status(401).json({ error: e });
+      if (e instanceof Error) res.status(401).json({ error: e.message });
+      else res.status(401).json({ error: e });
     }
   };
 
