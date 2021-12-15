@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
 import { Types } from 'mongoose';
 
-import User from '@db/users';
+import User, { TUser } from '@db/users';
 import Url, { urlSchema, TUrl } from '@db/urls';
 
 import { tokenGenerate, tokenValidate, decodeUser } from '@utils/token';
@@ -14,7 +14,23 @@ const controller = {
     get: async (req: Request, res: Response, next: NextFunction) => {
       try {
         // fetch
-        const shortLinks = await Url.find();
+        type PopulatedUrl = TUrl & { _id: string, user?: TUser };
+
+        let shortLinks: PopulatedUrl[] = [];
+        try {
+          shortLinks = await Url.find({ isListed: true })
+            .populate<PopulatedUrl[]>('user', 'isAdmin')
+            .orFail()
+            .then((links: PopulatedUrl[]) => {
+              return links
+                .filter((link: PopulatedUrl) => link?.user?.isAdmin ?? false)
+                .map(({ _id, name, slug, url, isListed, tags, opens }) => {
+                  return { _id, name, slug, url, isListed, tags, opens };
+                });
+            });
+        } catch (e) {
+          shortLinks = [];
+        }
 
         //resolution
         res.json(shortLinks);
@@ -39,7 +55,7 @@ const controller = {
           isListed,
           tags: linkName.split(' ').filter(isTag),
           opens: [],
-          user: new Types.ObjectId(user?._id),
+          user: new Types.ObjectId(user?._id)
         };
 
         // validation
@@ -80,7 +96,7 @@ const controller = {
           isListed: isListed || shortLink.isListed,
           tags: (linkName || shortLink.name).split(' ').filter(isTag),
           opens: shortLink.opens,
-          user: shortLink.user,
+          user: shortLink.user
         };
 
         // validation
