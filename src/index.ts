@@ -22,7 +22,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500);
   res.json({
     message: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : '🛠️'
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
   next();
 });
