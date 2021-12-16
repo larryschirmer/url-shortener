@@ -118,6 +118,28 @@ const controller = {
         next(e);
       }
     }
+  },
+  '/isValid': {
+    get: async ({ query }: Request, res: Response, next: NextFunction) => {
+      const { slug } = query;
+      try {
+        if (!slug) throw new Error('`slug` is required');
+        const query = { slug: Array.isArray(slug) ? slug[0] : slug };
+        if (typeof query.slug !== 'string')
+          throw new Error('`slug` is invalid');
+
+        const reservedSlugs = ['slug', 'auth', 'etl'];
+        if (reservedSlugs.includes(query.slug)) {
+          res.json({ isValid: false });
+          return;
+        }
+
+        const isValid = await Url.findOne(query);
+        res.json({ isValid: !isValid });
+      } catch (e) {
+        next(e);
+      }
+    }
   }
 };
 
