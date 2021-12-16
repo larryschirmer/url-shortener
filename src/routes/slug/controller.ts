@@ -5,7 +5,8 @@ import { Types } from 'mongoose';
 import Url, { urlSchema, TUrl } from '@db/urls';
 
 import { tokenGenerate } from '@utils/token';
-import { getUserLinks, getAdminLinks } from './utils';
+import parseError from '@utils/parseError';
+import { getUserLinks, getAdminLinks, isInUse } from './utils';
 
 const isTag = (word: string) => word[0] === '#';
 
@@ -42,6 +43,7 @@ const controller = {
 
         // validation
         await urlSchema.validate(newShortLink);
+        if (await isInUse(newShortLink.slug)) throw new Error('Slug is already in use');
 
         // resolution
         await Url.create(newShortLink);
@@ -65,6 +67,7 @@ const controller = {
       const { _id, name: linkName, url, isListed = false, slug, user } = body;
       try {
         if (!_id) throw new Error('`_id` is required');
+        if (await isInUse(slug)) throw new Error('Slug is already in use');
 
         // fetch
         const shortLink = await Url.findOne({ _id });
@@ -84,15 +87,6 @@ const controller = {
 
         // validation
         await urlSchema.validate(newShortLink);
-        const conflictingShortLink = await Url.findOne({
-          slug: newShortLink.slug
-        });
-        if (
-          conflictingShortLink?._id !== undefined &&
-          conflictingShortLink?._id.toString() !== shortLink?._id.toString()
-        ) {
-          throw new Error('slug already in use');
-        }
 
         // resolution
         const updatedShortLink = await Url.findOneAndUpdate(
@@ -135,14 +129,8 @@ const controller = {
         if (typeof query.slug !== 'string')
           throw new Error('`slug` is invalid');
 
-        const reservedSlugs = ['slug', 'auth', 'etl'];
-        if (reservedSlugs.includes(query.slug)) {
-          res.json({ isValid: false });
-          return;
-        }
-
-        const isValid = await Url.findOne(query);
-        res.json({ isValid: !isValid });
+        const isInvalid = await isInUse(query.slug);
+        res.json({ isValid: !isInvalid });
       } catch (e) {
         next(e);
       }
