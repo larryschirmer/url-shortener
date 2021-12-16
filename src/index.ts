@@ -22,7 +22,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500);
   res.json({
     message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack
+    stack: process.env.NODE_ENV === 'development' ? err.stack : '🛠️'
   });
   next();
 });
@@ -31,4 +31,3 @@ const port = process.env.PORT || 1337;
 app.listen(port, () => {
   logger.info(`Listening at http://localhost:${port}`);
 });
-

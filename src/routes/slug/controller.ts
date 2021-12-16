@@ -23,7 +23,7 @@ const controller = {
         //resolution
         res.json(links);
       } catch (e) {
-        next(e);
+        next(parseError(e));
       }
     },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
@@ -54,13 +54,7 @@ const controller = {
         const newToken = tokenGenerate({ name: user.name });
         res.json({ ...createdShortLink, token: newToken });
       } catch (e) {
-        if (
-          e instanceof Error &&
-          e.message.includes('duplicate key error collection')
-        ) {
-          e.message = 'Slug in use.';
-        }
-        next(e);
+        next(parseError(e));
       }
     },
     put: async ({ body }: Request, res: Response, next: NextFunction) => {
@@ -71,7 +65,7 @@ const controller = {
 
         // fetch
         const shortLink = await Url.findOne({ _id });
-        if (!shortLink?._id) throw new Error('id is not in use');
+        if (!shortLink) throw new Error('id is not in use');
 
         // construction
         const isAdmin = user?.isAdmin;
@@ -98,7 +92,7 @@ const controller = {
         const newToken = tokenGenerate({ name: user.name });
         res.json({ ...updatedShortLink, token: newToken });
       } catch (e) {
-        next(e);
+        next(parseError(e));
       }
     },
     delete: async ({ body }: Request, res: Response, next: NextFunction) => {
@@ -109,14 +103,14 @@ const controller = {
 
         // fetch current short link
         const shortLink = await Url.findOne({ _id });
-        if (!shortLink?._id) throw new Error('id is not in use');
+        if (!shortLink) throw new Error('id is not in use');
 
         // resolution
         await Url.findOneAndDelete({ _id });
         const newToken = tokenGenerate({ name: user.name });
         res.json({ token: newToken });
       } catch (e) {
-        next(e);
+        next(parseError(e));
       }
     }
   },
@@ -132,7 +126,7 @@ const controller = {
         const isInvalid = await isInUse(query.slug);
         res.json({ isValid: !isInvalid });
       } catch (e) {
-        next(e);
+        next(parseError(e));
       }
     }
   }
