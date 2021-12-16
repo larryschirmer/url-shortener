@@ -1,19 +1,18 @@
-import { ICollection } from 'monk';
+import mongoose, { Schema } from 'mongoose';
 
 import { Url } from './types';
-import db from '../dbinit';
 
-let collection: ICollection<Url>;
-const url = () => {
-  if (collection) return collection;
-
-  collection = db.get<Url>('urls');
-  collection.createIndex('slug', { unique: true });
-
-  return collection;
-};
+const UrlSchema = new Schema<Url>({
+  name: { type: String, required: true },
+  slug: { type: String, required: true, unique: true, index: true },
+  url: { type: String, required: true },
+  isListed: { type: Boolean, required: true },
+  tags: { type: [String], required: true },
+  opens: { type: [String], required: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User' }
+});
 
 export { default as urlSchema } from './schema';
-export { Url as Url } from './types';
+export type { Url as TUrl } from './types';
 
-export default url();
+export default mongoose.model<Url>('Url', UrlSchema);

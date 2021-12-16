@@ -1,49 +1,51 @@
 import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
+import { Types } from 'mongoose';
 
-import urls, { urlSchema, Url } from '@db/urls';
+import Url, { urlSchema, TUrl } from '@db/urls';
 
-import { tokenGenerate, tokenValidate } from '@utils/token';
+import { tokenGenerate } from '@utils/token';
+import { getUserLinks, getAdminLinks } from './utils';
 
 const isTag = (word: string) => word[0] === '#';
 
 const controller = {
   '/': {
     get: async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.body.user;
       try {
         // fetch
-        const shortLinks = await urls.find();
+        let links: TUrl[] = [];
+        if (user) links = await getUserLinks(user._id);
+        else links = await getAdminLinks();
 
         //resolution
-        res.json(shortLinks);
+        res.json(links);
       } catch (e) {
         next(e);
       }
     },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { name: linkName = '', slug, url, isListed = false } = body;
+      const { name: linkName = '', slug, url, isListed = false, user } = body;
       try {
-        // validate token
-        if (!body.token) throw new Error('Not Logged In');
-        tokenValidate(body.token);
-
         // construction
-        const newShortLink: Url = {
+        const newShortLink: TUrl = {
           name: linkName.length ? linkName : 'Unnamed',
           slug: slug || nanoid(5).toLowerCase(),
           url,
           isListed,
           tags: linkName.split(' ').filter(isTag),
-          opens: []
+          opens: [],
+          user: new Types.ObjectId(user?._id)
         };
 
         // validation
         await urlSchema.validate(newShortLink);
 
         // resolution
-        const createdShortLink = await urls.insert(newShortLink);
-        const token = tokenGenerate({ user: body.user });
-        res.json({ ...createdShortLink, token });
+        const createdShortLink = await Url.create(newShortLink);
+        const newToken = tokenGenerate({ name: user.name });
+        res.json({ ...createdShortLink.toJSON(), token: newToken });
       } catch (e) {
         if (
           e instanceof Error &&
@@ -55,32 +57,28 @@ const controller = {
       }
     },
     put: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { _id, name: linkName, url, isListed = false, slug } = body;
-
+      const { _id, name: linkName, url, isListed = false, slug, user } = body;
       try {
-        // validate token
-        if (!body.token) throw new Error('Not Logged In');
-        tokenValidate(body.token);
-
         if (!_id) throw new Error('`_id` is required');
 
         // fetch
-        const shortLink = await urls.findOne({ _id });
+        const shortLink = await Url.findOne({ _id });
         if (!shortLink?._id) throw new Error('id is not in use');
 
         // construction
-        const newShortLink: Url = {
+        const newShortLink: TUrl = {
           name: linkName || shortLink.name,
           slug: slug || shortLink.slug,
           url: url || shortLink.url,
           isListed: isListed || shortLink.isListed,
           tags: (linkName || shortLink.name).split(' ').filter(isTag),
-          opens: shortLink.opens
+          opens: shortLink.opens,
+          user: shortLink.user
         };
 
         // validation
         await urlSchema.validate(newShortLink);
-        const conflictingShortLink = await urls.findOne({
+        const conflictingShortLink = await Url.findOne({
           slug: newShortLink.slug
         });
         if (
@@ -91,35 +89,31 @@ const controller = {
         }
 
         // resolution
-        const updatedShortLink = await urls.findOneAndUpdate(
+        const updatedShortLink = await Url.findOneAndUpdate(
           { _id },
           { $set: newShortLink }
-        );
+        ).lean();
 
-        const token = tokenGenerate({ user: body.user });
-        res.json({ ...updatedShortLink, token });
+        const newToken = tokenGenerate({ name: user.name });
+        res.json({ ...updatedShortLink, token: newToken });
       } catch (e) {
         next(e);
       }
     },
     delete: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { _id } = body;
+      const { _id, user } = body;
 
       try {
-        // validate token
-        if (!body.token) throw new Error('Not Logged In');
-        tokenValidate(body.token);
-
         if (!_id) throw new Error('`_id` is required');
 
         // fetch current short link
-        const shortLink = await urls.findOne({ _id });
+        const shortLink = await Url.findOne({ _id });
         if (!shortLink?._id) throw new Error('id is not in use');
 
         // resolution
-        await urls.findOneAndDelete({ _id });
-        const token = tokenGenerate({ user: body.user });
-        res.json({ token });
+        await Url.findOneAndDelete({ _id });
+        const newToken = tokenGenerate({ name: user.name });
+        res.json({ token: newToken });
       } catch (e) {
         next(e);
       }

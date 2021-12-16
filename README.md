@@ -16,7 +16,8 @@ This is the backend for the Lnk Shrtnr application. Built with:
   - [x] View all short URLs details
   - [x] Delete a short URL
   - [x] Login as an admin
-  - [ ] Logout as a guest
+  - [ ] Login as a guest
+  - [ ] Validate that a slug is not in use
 
 ## Usage
 

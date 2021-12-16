@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 export type Url = {
   name: string;
   slug: string;
@@ -5,4 +7,5 @@ export type Url = {
   isListed: boolean;
   tags: string[];
   opens: string[];
+  user?: Types.ObjectId;
 };

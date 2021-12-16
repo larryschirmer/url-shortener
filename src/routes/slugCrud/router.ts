@@ -3,9 +3,11 @@ import controller from './controller';
 
 const slugCRUD = express.Router();
 
-slugCRUD.get('/', controller['/'].get);
-slugCRUD.post('/', controller['/'].post);
-slugCRUD.put('/', controller['/'].put);
-slugCRUD.delete('/', controller['/'].delete);
+import auth from '@middleware/auth';
+
+slugCRUD.get('/', auth(), controller['/'].get);
+slugCRUD.post('/', auth({ protect: true }), controller['/'].post);
+slugCRUD.put('/', auth({ protect: true }), controller['/'].put);
+slugCRUD.delete('/', auth({ protect: true }), controller['/'].delete);
 
 export default slugCRUD;

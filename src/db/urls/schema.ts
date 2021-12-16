@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 import { Url } from './types';
 
-const schema: yup.SchemaOf<Url> = yup.object({
+const schema: yup.SchemaOf<Omit<Url, 'user'>> = yup.object({
   name: yup.string().required(),
   slug: yup.string().trim().matches(/[\w-]/i).required(),
   url: yup.string().trim().url().required(),
