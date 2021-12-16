@@ -44,9 +44,13 @@ const controller = {
         await urlSchema.validate(newShortLink);
 
         // resolution
-        const createdShortLink = await Url.create(newShortLink);
+        await Url.create(newShortLink);
+        const createdShortLink = await Url.findOne(
+          { slug: newShortLink.slug },
+          '-__v -user'
+        ).lean();
         const newToken = tokenGenerate({ name: user.name });
-        res.json({ ...createdShortLink.toJSON(), token: newToken });
+        res.json({ ...createdShortLink, token: newToken });
       } catch (e) {
         if (
           e instanceof Error &&
@@ -67,11 +71,12 @@ const controller = {
         if (!shortLink?._id) throw new Error('id is not in use');
 
         // construction
+        const isAdmin = user?.isAdmin;
         const newShortLink: TUrl = {
           name: linkName || shortLink.name,
           slug: slug || shortLink.slug,
           url: url || shortLink.url,
-          isListed: isListed || shortLink.isListed,
+          isListed: isAdmin ? isListed ?? shortLink.isListed : false,
           tags: (linkName || shortLink.name).split(' ').filter(isTag),
           opens: shortLink.opens,
           user: shortLink.user
@@ -92,7 +97,8 @@ const controller = {
         // resolution
         const updatedShortLink = await Url.findOneAndUpdate(
           { _id },
-          { $set: newShortLink }
+          { $set: newShortLink },
+          { projection: '-__v -user' }
         ).lean();
 
         const newToken = tokenGenerate({ name: user.name });
