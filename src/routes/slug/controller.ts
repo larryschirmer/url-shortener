@@ -29,11 +29,12 @@ const controller = {
       const { name: linkName = '', slug, url, isListed = false, user } = body;
       try {
         // construction
+        const isAdmin = user?.isAdmin;
         const newShortLink: TUrl = {
           name: linkName.length ? linkName : 'Unnamed',
           slug: slug || nanoid(5).toLowerCase(),
           url,
-          isListed,
+          isListed: isAdmin ? isListed : false,
           tags: linkName.split(' ').filter(isTag),
           opens: [],
           user: new Types.ObjectId(user?._id)
