@@ -4,7 +4,6 @@ import { Types } from 'mongoose';
 
 import Url, { urlSchema, TUrl } from '@db/urls';
 
-import { tokenGenerate } from '@utils/token';
 import parseError from '@utils/parseError';
 import { getUserLinks, getAdminLinks, isInUse } from './utils';
 
@@ -14,6 +13,7 @@ const controller = {
   '/': {
     get: async (req: Request, res: Response, next: NextFunction) => {
       const user = req.body.user;
+
       try {
         // fetch
         let links: TUrl[] = [];
@@ -28,6 +28,7 @@ const controller = {
     },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
       const { name: linkName = '', slug, url, isListed = false, user } = body;
+
       try {
         // construction
         const isAdmin = user?.isAdmin;
@@ -43,7 +44,8 @@ const controller = {
 
         // validation
         await urlSchema.validate(newShortLink);
-        if (await isInUse(newShortLink.slug)) throw new Error('Slug is already in use');
+        if (await isInUse(newShortLink.slug))
+          throw new Error('Slug is already in use');
 
         // resolution
         await Url.create(newShortLink);
@@ -51,20 +53,26 @@ const controller = {
           { slug: newShortLink.slug },
           '-__v -user'
         ).lean();
-        const newToken = tokenGenerate({ name: user.name });
-        res.json({ ...createdShortLink, token: newToken });
+
+        res.json(createdShortLink);
       } catch (e) {
         next(parseError(e));
       }
     },
-    put: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { _id, name: linkName, url, isListed = false, slug, user } = body;
+    put: async (
+      { params, body }: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
+      const { linkId } = params;
+      const { name: linkName, url, isListed, slug, user } = body;
+
       try {
-        if (!_id) throw new Error('`_id` is required');
+        if (!linkId) throw new Error('`_id` is required');
         if (await isInUse(slug)) throw new Error('Slug is already in use');
 
         // fetch
-        const shortLink = await Url.findOne({ _id });
+        const shortLink = await Url.findOne({ _id: linkId });
         if (!shortLink) throw new Error('id is not in use');
 
         // construction
@@ -83,32 +91,31 @@ const controller = {
         await urlSchema.validate(newShortLink);
 
         // resolution
-        const updatedShortLink = await Url.findOneAndUpdate(
-          { _id },
-          { $set: newShortLink },
-          { projection: '-__v -user' }
+        await Url.findOneAndUpdate({ _id: linkId }, { $set: newShortLink });
+        const updatedShortLink = await Url.findOne(
+          { _id: linkId },
+          '-__v -user'
         ).lean();
 
-        const newToken = tokenGenerate({ name: user.name });
-        res.json({ ...updatedShortLink, token: newToken });
+        res.json(updatedShortLink);
       } catch (e) {
         next(parseError(e));
       }
     },
-    delete: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { _id, user } = body;
+    delete: async ({ params }: Request, res: Response, next: NextFunction) => {
+      const { linkId } = params;
 
       try {
-        if (!_id) throw new Error('`_id` is required');
+        if (!linkId) throw new Error('`_id` is required');
 
         // fetch current short link
-        const shortLink = await Url.findOne({ _id });
+        const shortLink = await Url.findOne({ _id: linkId });
         if (!shortLink) throw new Error('id is not in use');
 
         // resolution
-        await Url.findOneAndDelete({ _id });
-        const newToken = tokenGenerate({ name: user.name });
-        res.json({ token: newToken });
+        await Url.findOneAndDelete({ _id: linkId });
+
+        res.json({});
       } catch (e) {
         next(parseError(e));
       }

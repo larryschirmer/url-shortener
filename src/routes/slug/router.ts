@@ -7,8 +7,8 @@ import auth from '@middleware/auth';
 
 slug.get('/', auth(), controller['/'].get);
 slug.post('/', auth({ protect: true }), controller['/'].post);
-slug.put('/', auth({ protect: true }), controller['/'].put);
-slug.delete('/', auth({ protect: true }), controller['/'].delete);
+slug.put('/:linkId', auth({ protect: true }), controller['/'].put);
+slug.delete('/:linkId', auth({ protect: true }), controller['/'].delete);
 slug.get('/isValid', controller['/isValid'].get);
 
 export default slug;
