@@ -9,7 +9,7 @@ import Url from '@db/urls';
 const controller = {
   '/createUser': {
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { name, password } = body;
+      const { name, password, isAdmin = false } = body;
       try {
         // validate new user info
         if (
@@ -27,7 +27,7 @@ const controller = {
 
         // create user
         const hash = await gen(password);
-        const newUser: TUser = { name, password: hash, isAdmin: false };
+        const newUser: TUser = { name, password: hash, isAdmin };
         await User.create(newUser);
 
         //resolution
