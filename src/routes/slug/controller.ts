@@ -115,7 +115,7 @@ const controller = {
         // resolution
         await Url.findOneAndDelete({ _id: linkId });
 
-        res.json({});
+        res.json({ success: true });
       } catch (e) {
         next(parseError(e));
       }
