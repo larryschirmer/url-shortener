@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
 import { gen } from '@utils/hash';
+import parseError from '@utils/parseError';
 
 import User, { TUser } from '@db/users';
 import Url from '@db/urls';
@@ -33,7 +34,7 @@ const controller = {
         //resolution
         res.json({ success: true });
       } catch (e) {
-        next(e);
+        next(parseError(e));
       }
     }
   },
@@ -58,7 +59,7 @@ const controller = {
         //resolution
         res.json({ success: true });
       } catch (e) {
-        next(e);
+        next(parseError(e));
       }
     }
   }
