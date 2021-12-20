@@ -6,151 +6,22 @@
 	},
 	"item": [
 		{
-			"name": "Get All (load page)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:1337/url",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "1337",
-					"path": [
-						"url"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Redirect",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:1337/l/rujzg",
+					"raw": "http://localhost:1337/d9bz0",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "1337",
 					"path": [
-						"l",
-						"rujzg"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Short Link (simple)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"url\": \"https://google.com\",\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoibWlzc3BlbGxlZC1naG9zdCIsImlhdCI6MTYzNjQxMjAxMywiZXhwIjoxNjM2NDk4NDEzfQ.13YvcE4gm9DF6h7mYdDuIv-cVsx-ak-A9BZymnfXfSo\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:1337/url",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "1337",
-					"path": [
-						"url"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Short Link (complex)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Youtube #social #video #educational #fun\",\r\n    \"slug\": \"youtube\",\r\n    \"url\": \"https://youtube.com\",\r\n    \"isListed\": false\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:1337/url",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "1337",
-					"path": [
-						"url"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Link Properties",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"_id\": \"6181bb4e83f59c3b050197ad\",\r\n    \"name\": \"google!\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:1337/url",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "1337",
-					"path": [
-						"url"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Short Link",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"_id\": \"6181bb4e83f59c3b050197ad\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:1337/url",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "1337",
-					"path": [
-						"url"
+						"d9bz0"
 					]
 				}
 			},
@@ -159,11 +30,14 @@
 		{
 			"name": "Login",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"user\": \"\",\r\n    \"password\": \"\"\r\n}",
+					"raw": "{\r\n    \"name\": \"admin\",\r\n    \"password\": \"password\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -179,6 +53,287 @@
 					"port": "1337",
 					"path": [
 						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Links",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{local_admin}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1337/slug",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1337",
+					"path": [
+						"slug"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PreValidate Slugs",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1337/slug/isValid?slug=yt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1337",
+					"path": [
+						"slug",
+						"isValid"
+					],
+					"query": [
+						{
+							"key": "slug",
+							"value": "yt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Link (simple)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{local_admin}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"url\": \"https://google.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1337/slug",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1337",
+					"path": [
+						"slug"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Link (complex)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{local_admin}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Youtube #social #video #educational #fun\",\r\n    \"slug\": \"youtube#\",\r\n    \"url\": \"https://youtube.com\",\r\n    \"isListed\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1337/slug",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1337",
+					"path": [
+						"slug"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Link Properties",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{local_admin}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Youtube #social #video #fun!!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1337/slug/61be7a18f2ea9fe4dea8ab41",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1337",
+					"path": [
+						"slug",
+						"61be7a18f2ea9fe4dea8ab41"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Link",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{local_admin}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1337/slug/61be7a18f2ea9fe4dea8ab41",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1337",
+					"path": [
+						"slug",
+						"61be7a18f2ea9fe4dea8ab41"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ETL] Create User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{local_admin}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"user\",\n    \"password\": \"abc123\",\n    \"isAdmin\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1337/etl/createUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1337",
+					"path": [
+						"etl",
+						"createUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ETL] Add User to Links",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{local_admin}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"61b9127b4f2cca57a204ac56\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1337/etl/addUserToLinks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1337",
+					"path": [
+						"etl",
+						"addUserToLinks"
 					]
 				}
 			},
