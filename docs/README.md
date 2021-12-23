@@ -150,7 +150,7 @@ Creates a new link. `url` is a required field, all others are optional.
 
 ## Update Link
 
-Uses the `_id` field to select a link to update. All other fields are optional. Any fields that are not specified will not be updated.
+Uses the `linkId` param to select a link to update. All fields are optional. Any fields that are not specified will not be updated.
 
 ### Request
 
@@ -176,6 +176,8 @@ Uses the `_id` field to select a link to update. All other fields are optional. 
     }
 
 ## Delete Link
+
+Uses the `linkId` param to select a link to delete.
 
 ### Request
 
