@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { tokenValidate, decodeUser } from '@utils/token';
-import User, { TUser } from '@db/users';
+import User from '@db/users';
 
 const auth =
   ({ protect = false, isAdmin = false } = {}) =>
