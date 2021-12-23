@@ -18,7 +18,7 @@ const auth =
       }
       if (token) {
         const userName = decodeUser(token);
-        const user = (await User.findOne({ name: userName }));
+        const user = await User.findOne({ name: userName });
         if (!user) throw new Error('Username is not found');
         req.body.user = user;
         if (isAdmin && !user.isAdmin) throw new Error('Not Authorized');

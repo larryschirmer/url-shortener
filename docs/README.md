@@ -41,6 +41,24 @@ For non-logged in users, the home page will show a list of all "Listed" URLs. Th
         "token": jwt-token
     }
 
+## Get User
+
+Authenticated users can get their own information.
+
+### Request
+
+`GET /auth`
+
+    curl -X GET 'http://localhost:1337/auth' \
+    -H 'Authorization: Bearer jwt-token'
+
+### Response
+
+    {
+        "name": "admin",
+        "isAdmin": true,
+    }
+
 ## Get All Links
 
 Returns all links.

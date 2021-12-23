@@ -3,9 +3,22 @@ import { Request, Response, NextFunction } from 'express';
 import User from '@db/users';
 import { compare } from '@utils/hash';
 import { tokenGenerate } from '@utils/token';
+import parseError from '@utils/parseError';
 
 const controller = {
   '/': {
+    get: async (req: Request, res: Response, next: NextFunction) => {
+      const { user } = req.body;
+      try {
+        const userSparse = await User.findOne(
+          { name: user.name },
+          '-_id name isAdmin'
+        ).lean();
+        res.json(userSparse);
+      } catch (e) {
+        next(parseError(e));
+      }
+    },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
       const { name, password } = body;
       try {
