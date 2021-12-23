@@ -69,11 +69,11 @@ const controller = {
 
       try {
         if (!linkId) throw new Error('`_id` is required');
-        if (await isInUse(slug)) throw new Error('Slug is already in use');
-
+        
         // fetch
         const shortLink = await Url.findOne({ _id: linkId });
         if (!shortLink) throw new Error('id is not in use');
+        if (slug !== shortLink.slug && await isInUse(slug)) throw new Error('Slug is already in use');
 
         // construction
         const isAdmin = user?.isAdmin;
