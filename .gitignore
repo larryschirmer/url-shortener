@@ -3,3 +3,4 @@ build
 *.log
 *.env
 kubeconfig.yaml
+kube/env-vars.yaml
