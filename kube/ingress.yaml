@@ -2,34 +2,34 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: master-ingress
+  namespace: default
   annotations:
-    kubernetes.io/ingress.class: "nginx"    
-    cert-manager.io/cluster-issuer: "letsencrypt-staging"
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    kubernetes.io/ingress.class: 'nginx'
+    cert-manager.io/issuer: 'letsencrypt-prod'
 spec:
   tls:
-  - hosts:
-    - schr.me
-    - test.schr.me
-    secretName: schr-tls
+    - hosts:
+        - schr.me
+        - test.schr.me
+      secretName: schr-tls-prod
   rules:
-  - host: schr.me
-    http:
-      paths:
-      - pathType: Prefix
-        path: "/"
-        backend:
-          service:
-            name: url-shortener-svc
-            port:
-              number: 80
-  - host: test.schr.me
-    http:
-      paths:
-      - pathType: Prefix
-        path: "/"
-        backend:
-          service:
-            name: test-svc
-            port:
-              number: 80
+    - host: schr.me
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/'
+            backend:
+              service:
+                name: url-shortener-svc
+                port:
+                  number: 80
+    - host: test.schr.me
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/'
+            backend:
+              service:
+                name: test-svc
+                port:
+                  number: 80
