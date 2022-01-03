@@ -32,8 +32,8 @@ For non-logged in users, the home page will show a list of all "Listed" URLs. Th
 `POST /auth`
 
     curl -X POST 'http://localhost:1337/auth' \
-    -H 'Content-Type: application/json' \
-    -d '{"name": "admin", "password": "password"}'
+        -H 'Content-Type: application/json' \
+        -d '{"name": "admin", "password": "password"}'
 
 ### Response
 
@@ -50,13 +50,14 @@ Authenticated users can get their own information.
 `GET /auth`
 
     curl -X GET 'http://localhost:1337/auth' \
-    -H 'Authorization: Bearer jwt-token'
+        -H 'Authorization: Bearer jwt-token'
 
 ### Response
 
     {
         "name": "admin",
         "isAdmin": true,
+        "favorites": []
     }
 
 ## Get All Links
@@ -95,7 +96,7 @@ Returns all links that are "Listed". These links belong to any of the admin user
 Returns all links that belong to the logged in user.
 
     curl -X GET 'http://localhost:1337/slug' \
-    -H 'Authorization: Bearer jwt-token'
+        -H 'Authorization: Bearer jwt-token'
 
 ### Response
 
@@ -145,14 +146,14 @@ Creates a new link. `url` is a required field, all others are optional.
 `POST /slug`
 
     curl -X POST 'http://localhost:1337/slug' \
-    --header 'Authorization: Bearer jwt-token' \
-    --header 'Content-Type: application/json' \
-    -d '{
-        "name": "Youtube #social #video #educational #fun",
-        "slug": "youtube",
-        "url": "https://youtube.com",
-        "isListed": false
-    }'
+        --header 'Authorization: Bearer jwt-token' \
+        --header 'Content-Type: application/json' \
+        -d '{
+            "name": "Youtube #social #video #educational #fun",
+            "slug": "youtube",
+            "url": "https://youtube.com",
+            "isListed": false
+        }'
 
 ### Response
 
@@ -175,11 +176,11 @@ Uses the `linkId` param to select a link to update. All fields are optional. Any
 `PUT /slug/:linkId`
 
     curl -X PUT 'http://localhost:1337/slug/:linkId' \
-    --header 'Authorization: Bearer jwt-token' \
-    --header 'Content-Type: application/json' \
-    -d '{
-        "name": "Youtube #social #video #fun!"
-    }'
+        --header 'Authorization: Bearer jwt-token' \
+        --header 'Content-Type: application/json' \
+        -d '{
+            "name": "Youtube #social #video #fun!"
+        }'
 
 ### Response
 
@@ -202,11 +203,50 @@ Uses the `linkId` param to select a link to delete.
 `DELETE /slug/:linkId`
 
     curl -X DELETE 'http://localhost:1337/slug/:linkId' \
-    --header 'Authorization: Bearer jwt-token'
+        --header 'Authorization: Bearer jwt-token'
 
 ### Response
 
     { "success": true }
+
+## Add Favorite
+
+Uses the `linkId` param to add a link to a user's favorites.
+
+### Request
+
+`PUT /user/favorite/:linkId`
+
+    curl -X PUT 'http://localhost:1337/user/favorite/:linkId' \
+        --header 'Authorization: Bearer jwt-token'
+
+### Response
+
+    {
+        "name": "admin",
+        "isAdmin": true,
+        "favorites": ["61be2b2e003d33d6c33f5f8b"]
+    }
+
+## Delete Favorite
+
+Uses the `linkId` param to remove a link from a user's favorites.
+
+### Request
+
+`PUT /user/favorite/:linkId`
+
+    curl -X DELETE 'http://localhost:1337/user/favorite/:linkId' \
+        --header 'Authorization: Bearer jwt-token'
+
+### Response
+
+    {
+        "name": "admin",
+        "isAdmin": true,
+        "favorites": []
+    }
+
 
 ## Create User (Admin)
 
@@ -217,13 +257,13 @@ Creates a new user with the specified name and password. This endpoint is only a
 `POST /etl/createUser`
 
     curl -X POST 'http://localhost:1337/etl/createUser' \
-    --header 'Authorization: Bearer jwt-token' \
-    --header 'Content-Type: application/json' \
-    -d '{
-        "name": "user",
-        "password": "abc123",
-        "isAdmin": false
-    }'
+        --header 'Authorization: Bearer jwt-token' \
+        --header 'Content-Type: application/json' \
+        -d '{
+            "name": "user",
+            "password": "abc123",
+            "isAdmin": false
+        }'
 
 ### Response
 
@@ -238,11 +278,11 @@ Creates a new user with the specified name and password. This endpoint is only a
 `POST /etl/addUserToLinks`
 
     curl -X POST 'http://localhost:1337/etl/addUserToLinks' \
-    --header 'Authorization: Bearer jwt-token' \
-    --header 'Content-Type: application/json' \
-    -d '{
-        "userId": "61b9127b4f2cca57a204ac56"
-    }'
+        --header 'Authorization: Bearer jwt-token' \
+        --header 'Content-Type: application/json' \
+        -d '{
+            "userId": "61b9127b4f2cca57a204ac56"
+        }'
 
 ### Response
 
