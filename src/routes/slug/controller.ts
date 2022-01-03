@@ -48,13 +48,19 @@ const controller = {
           throw new Error('Slug is already in use');
 
         // resolution
-        await Url.create(newShortLink);
-        const createdShortLink = await Url.findOne(
-          { slug: newShortLink.slug },
-          '-__v -user'
-        ).lean();
+        const createdShortLinkId = await Url.create(newShortLink).then(
+          (link) => link.toObject()._id
+        );
 
-        res.json(createdShortLink);
+        res.json({
+          _id: createdShortLinkId,
+          name: newShortLink.name,
+          slug: newShortLink.slug,
+          url: newShortLink.url,
+          isListed: newShortLink.isListed,
+          tags: newShortLink.tags,
+          opens: newShortLink.opens
+        });
       } catch (e) {
         next(parseError(e));
       }
@@ -69,11 +75,12 @@ const controller = {
 
       try {
         if (!linkId) throw new Error('`_id` is required');
-        
+
         // fetch
         const shortLink = await Url.findOne({ _id: linkId });
         if (!shortLink) throw new Error('id is not in use');
-        if (slug !== shortLink.slug && await isInUse(slug)) throw new Error('Slug is already in use');
+        if (slug !== shortLink.slug && (await isInUse(slug)))
+          throw new Error('Slug is already in use');
 
         // construction
         const isAdmin = user?.isAdmin;
@@ -91,11 +98,14 @@ const controller = {
         await urlSchema.validate(newShortLink);
 
         // resolution
-        await Url.findOneAndUpdate({ _id: linkId }, { $set: newShortLink });
-        const updatedShortLink = await Url.findOne(
+        const updatedShortLink = await Url.findOneAndUpdate(
           { _id: linkId },
-          '-__v -user'
-        ).lean();
+          { $set: newShortLink },
+          {
+            new: true,
+            projection: '-__v -user'
+          }
+        );
 
         res.json(updatedShortLink);
       } catch (e) {
