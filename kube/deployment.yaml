@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: url-shortener
-          image: larryschirmer/url-short:1.0.0
+          image: larryschirmer/url-short:1.0.2
           ports:
             - containerPort: 1337
           envFrom:

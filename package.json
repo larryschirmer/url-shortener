@@ -1,7 +1,7 @@
 {
   "name": "url-shortener",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.2",
+  "description": "Express REST API for URL Shortener",
   "main": "index.js",
   "scripts": {
     "dev": "npm run build:live",
@@ -12,8 +12,8 @@
     "tsc": "./node_modules/typescript/bin/tsc"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Larry Schirmer",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
