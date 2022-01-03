@@ -6,6 +6,15 @@
 	},
 	"item": [
 		{
+			"name": "About",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
 			"name": "Redirect",
 			"request": {
 				"auth": {

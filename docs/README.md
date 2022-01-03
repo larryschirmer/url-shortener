@@ -2,6 +2,32 @@
 
 The REST API for the URL Shortener application.
 
+## About
+
+Returns a JSON object with details about the app including:
+
+    - Author Name
+    - Description
+    - Version Number
+    - Release Notes
+
+### Request
+
+`GET /slug/isValid?slug=slugName`
+
+    curl -X GET 'http://localhost:1337/about'
+
+### Response
+
+    {
+        "name": "URL Shortener",
+        "description": "A URL shortener built with Node.js and Express.js",
+        "author": "Larry Schirmer",
+        "license": "MIT",
+        "version": "1.0.X",
+        "releaseNotes": "Add new endpoint"
+    }
+
 ## Redirect
 
 Redirects user to the corresponding URL if the slug is found.
@@ -10,7 +36,7 @@ Redirects user to the corresponding URL if the slug is found.
 
 `GET /:slug`
 
-    curl --location --request GET 'http://localhost:1337/:slug'
+    curl -X GET 'http://localhost:1337/:slug'
 
 ## Login
 
@@ -146,8 +172,8 @@ Creates a new link. `url` is a required field, all others are optional.
 `POST /slug`
 
     curl -X POST 'http://localhost:1337/slug' \
-        --header 'Authorization: Bearer jwt-token' \
-        --header 'Content-Type: application/json' \
+        -H 'Authorization: Bearer jwt-token' \
+        -H 'Content-Type: application/json' \
         -d '{
             "name": "Youtube #social #video #educational #fun",
             "slug": "youtube",
@@ -176,8 +202,8 @@ Uses the `linkId` param to select a link to update. All fields are optional. Any
 `PUT /slug/:linkId`
 
     curl -X PUT 'http://localhost:1337/slug/:linkId' \
-        --header 'Authorization: Bearer jwt-token' \
-        --header 'Content-Type: application/json' \
+        -H 'Authorization: Bearer jwt-token' \
+        -H 'Content-Type: application/json' \
         -d '{
             "name": "Youtube #social #video #fun!"
         }'
@@ -203,7 +229,7 @@ Uses the `linkId` param to select a link to delete.
 `DELETE /slug/:linkId`
 
     curl -X DELETE 'http://localhost:1337/slug/:linkId' \
-        --header 'Authorization: Bearer jwt-token'
+        -H 'Authorization: Bearer jwt-token'
 
 ### Response
 
@@ -218,7 +244,7 @@ Uses the `linkId` param to add a link to a user's favorites.
 `PUT /user/favorite/:linkId`
 
     curl -X PUT 'http://localhost:1337/user/favorite/:linkId' \
-        --header 'Authorization: Bearer jwt-token'
+        -H 'Authorization: Bearer jwt-token'
 
 ### Response
 
@@ -237,7 +263,7 @@ Uses the `linkId` param to remove a link from a user's favorites.
 `PUT /user/favorite/:linkId`
 
     curl -X DELETE 'http://localhost:1337/user/favorite/:linkId' \
-        --header 'Authorization: Bearer jwt-token'
+        -H 'Authorization: Bearer jwt-token'
 
 ### Response
 
@@ -246,7 +272,6 @@ Uses the `linkId` param to remove a link from a user's favorites.
         "isAdmin": true,
         "favorites": []
     }
-
 
 ## Create User (Admin)
 
@@ -257,8 +282,8 @@ Creates a new user with the specified name and password. This endpoint is only a
 `POST /etl/createUser`
 
     curl -X POST 'http://localhost:1337/etl/createUser' \
-        --header 'Authorization: Bearer jwt-token' \
-        --header 'Content-Type: application/json' \
+        -H 'Authorization: Bearer jwt-token' \
+        -H 'Content-Type: application/json' \
         -d '{
             "name": "user",
             "password": "abc123",
@@ -278,8 +303,8 @@ Creates a new user with the specified name and password. This endpoint is only a
 `POST /etl/addUserToLinks`
 
     curl -X POST 'http://localhost:1337/etl/addUserToLinks' \
-        --header 'Authorization: Bearer jwt-token' \
-        --header 'Content-Type: application/json' \
+        -H 'Authorization: Bearer jwt-token' \
+        -H 'Content-Type: application/json' \
         -d '{
             "userId": "61b9127b4f2cca57a204ac56"
         }'
