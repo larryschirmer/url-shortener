@@ -10,10 +10,21 @@ spec:
   tls:
     - hosts:
         - schr.me
+        - l.schr.me
         - test.schr.me
       secretName: schr-tls-prod
   rules:
     - host: schr.me
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/'
+            backend:
+              service:
+                name: url-shortener-svc
+                port:
+                  number: 80
+    - host: l.schr.me
       http:
         paths:
           - pathType: Prefix
