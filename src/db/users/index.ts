@@ -5,7 +5,8 @@ import { User } from './types';
 const UserSchema = new Schema<User>({
   name: { type: String, required: true, unique: true, index: true },
   password: { type: String, required: true },
-  isAdmin: { type: Boolean },
+  favorites: { type: [String], default: [] },
+  isAdmin: { type: Boolean }
 });
 
 export { default as userSchema } from './schema';

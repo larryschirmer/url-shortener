@@ -12,7 +12,7 @@ const controller = {
       try {
         const userSparse = await User.findOne(
           { name: user.name },
-          '-_id name isAdmin'
+          'name favorites isAdmin'
         ).lean();
         res.json(userSparse);
       } catch (e) {
