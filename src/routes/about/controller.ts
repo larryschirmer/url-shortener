@@ -7,8 +7,8 @@ const about = {
   description: 'A URL shortener built with Node.js and Express.js',
   author: 'Larry Schirmer',
   license: 'MIT',
-  version: '1.0.2',
-  releaseNotes: 'Add new endpoint to get the current version of the application'
+  version: '1.0.3',
+  releaseNotes: 'Enrich returned links with favorite status'
 };
 
 const controller = {
