@@ -28,7 +28,7 @@ const controller = {
 
         // create user
         const hash = await gen(password);
-        const newUser: TUser = { name, password: hash, favorites: [], isAdmin };
+        const newUser: TUser = { name, password: hash, isAdmin };
         await User.create(newUser);
 
         //resolution
