@@ -5,6 +5,7 @@ export type Url = {
   slug: string;
   url: string;
   isListed: boolean;
+  isFavorite?: boolean;
   tags: string[];
   opens: string[];
   user?: Types.ObjectId;
