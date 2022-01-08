@@ -144,6 +144,47 @@ const controller = {
       }
     }
   },
+  '/favorite': {
+    put: async (
+      { params, body }: Request,
+      res: Response,
+      next: NextFunction
+    ) => {
+      const { linkId } = params;
+      const {
+        user,
+        isFavorite
+      }: { user: TUserDoc; isFavorite: boolean | undefined } = body;
+
+      try {
+        if (!linkId) throw new Error('`_id` is required');
+        if (isFavorite === undefined)
+          throw new Error('`isFavorite` is required');
+
+        // fetch
+        const link = await Url.findById(linkId);
+        if (!link) throw new Error('Link not found');
+
+        // validation
+        if (link?.user?.toString() !== user._id.toString())
+          throw new Error('Unauthorized');
+
+        // resolution
+        const updatedShortLink = await Url.findOneAndUpdate(
+          { _id: linkId },
+          { $set: { isFavorite: isFavorite } },
+          {
+            new: true,
+            projection: '-__v -user'
+          }
+        );
+
+        res.json(updatedShortLink);
+      } catch (e) {
+        next(parseError(e));
+      }
+    }
+  },
   '/isValid': {
     get: async ({ query }: Request, res: Response, next: NextFunction) => {
       const { slug } = query;
