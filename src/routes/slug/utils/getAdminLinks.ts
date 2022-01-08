@@ -7,23 +7,25 @@ const getAdminLinks = async () => {
   let links: PopulatedUrl[] = [];
   try {
     links = await Url.find({ isListed: true })
-      .populate<PopulatedUrl[]>('user', 'isAdmin favorites')
+      .populate<PopulatedUrl[]>('user', 'isAdmin')
       .orFail()
       .then((links: PopulatedUrl[]) => {
         return links
           .filter((link: PopulatedUrl) => link?.user?.isAdmin ?? false)
-          .map(({ _id, name, slug, url, isListed, tags, opens, user }) => {
-            return {
-              _id,
-              name,
-              slug,
-              url,
-              isListed,
-              tags,
-              opens,
-              isFavorite: user?.favorites.includes(_id) ?? false
-            };
-          });
+          .map(
+            ({ _id, name, slug, url, isListed, isFavorite, tags, opens }) => {
+              return {
+                _id,
+                name,
+                slug,
+                url,
+                isListed,
+                isFavorite,
+                tags,
+                opens
+              };
+            }
+          );
       });
   } catch (e) {
     links = [];
