@@ -82,14 +82,24 @@ const controller = {
         // fetch
         const shortLink = await Url.findOne({ _id: linkId });
         if (!shortLink) throw new Error('id is not in use');
-        if (slug !== shortLink.slug && (await isInUse(slug)))
+        if (
+          slug !== undefined &&
+          slug !== shortLink.slug &&
+          (await isInUse(slug))
+        )
           throw new Error('Slug is already in use');
+
+        const newSlug = slug
+          ? slug // if slug is provided, use it
+          : slug === ''
+          ? nanoid(5).toLowerCase() // if slug is empty, generate a random one
+          : shortLink.slug; // if slug is not provided, use the existing one
 
         // construction
         const isAdmin = user?.isAdmin;
         const newShortLink: TUrl = {
           name: linkName || shortLink.name,
-          slug: slug || shortLink.slug,
+          slug: newSlug,
           url: url || shortLink.url,
           isListed: isAdmin ? isListed ?? shortLink.isListed : false,
           tags: (linkName || shortLink.name).split(' ').filter(isTag),
