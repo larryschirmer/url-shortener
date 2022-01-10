@@ -83,7 +83,6 @@ Authenticated users can get their own information.
     {
         "name": "admin",
         "isAdmin": true,
-        "favorites": []
     }
 
 ## Get All Links
@@ -112,6 +111,7 @@ Returns all links that are "Listed". These links belong to any of the admin user
             "slug": "youtube",
             "url": "https://youtube.com",
             "isListed": true,
+            "isFavorite": false,
             "tags": [ "#social", "#video", "#educational", "#fun" ],
             "opens": []
         }
@@ -133,6 +133,7 @@ Returns all links that belong to the logged in user.
             "slug": "k9eke",
             "url": "https://google.com",
             "isListed": false,
+            "isFavorite": false,
             "tags": [],
             "opens": []
         },
@@ -142,6 +143,7 @@ Returns all links that belong to the logged in user.
             "slug": "youtube",
             "url": "https://youtube.com",
             "isListed": true,
+            "isFavorite": false,
             "tags": [ "#social", "#video", "#educational", "#fun" ],
             "opens": []
         }
@@ -189,6 +191,7 @@ Creates a new link. `url` is a required field, all others are optional.
         "slug": "youtube",
         "url": "https://youtube.com",
         "isListed": false,
+        "isFavorite": false,
         "tags": [ "#social", "#video", "#educational", "#fun" ],
         "opens": []
     }
@@ -216,6 +219,7 @@ Uses the `linkId` param to select a link to update. All fields are optional. Any
         "slug": "youtube",
         "url": "https://youtube.com",
         "isListed": false,
+        "isFavorite": false,
         "tags": [ "#social", "#video", "#fun!" ],
         "opens": []
     }
@@ -235,42 +239,32 @@ Uses the `linkId` param to select a link to delete.
 
     { "success": true }
 
-## Add Favorite
+## Set Favorite
 
-Uses the `linkId` param to add a link to a user's favorites.
-
-### Request
-
-`PUT /user/favorite/:linkId`
-
-    curl -X PUT 'http://localhost:1337/user/favorite/:linkId' \
-        -H 'Authorization: Bearer jwt-token'
-
-### Response
-
-    {
-        "name": "admin",
-        "isAdmin": true,
-        "favorites": ["61be2b2e003d33d6c33f5f8b"]
-    }
-
-## Delete Favorite
-
-Uses the `linkId` param to remove a link from a user's favorites.
+Uses the `linkId` param to mark a link as favorite.
 
 ### Request
 
 `PUT /user/favorite/:linkId`
 
-    curl -X DELETE 'http://localhost:1337/user/favorite/:linkId' \
+    curl -X PUT 'http://localhost:1337/slug/favorite/:linkId' \
         -H 'Authorization: Bearer jwt-token'
+        -H 'Content-Type: application/json' \
+        -d '{
+            "isFavorite": true
+        }'
 
 ### Response
 
     {
-        "name": "admin",
-        "isAdmin": true,
-        "favorites": []
+        "_id": "61be680a1150adad81d7d9af",
+        "name": "Youtube #social #video #fun!",
+        "slug": "youtube",
+        "url": "https://youtube.com",
+        "isListed": false,
+        "isFavorite": true,
+        "tags": [ "#social", "#video", "#fun!" ],
+        "opens": []
     }
 
 ## Create User (Admin)

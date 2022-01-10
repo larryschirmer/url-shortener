@@ -8,9 +8,20 @@
 		{
 			"name": "About",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": "{{local_url}}/about",
+					"host": [
+						"{{local_url}}"
+					],
+					"path": [
+						"about"
+					]
+				}
 			},
 			"response": []
 		},
@@ -197,7 +208,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Youtube #social #video #educational #fun\",\r\n    \"slug\": \"youtube#\",\r\n    \"url\": \"https://youtube.com\",\r\n    \"isListed\": true\r\n}",
+					"raw": "{\r\n    \"name\": \"Youtube #social #video #educational #fun\",\r\n    \"slug\": \"youtube123\",\r\n    \"url\": \"https://youtube.com\",\r\n    \"isListed\": true\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -233,7 +244,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Youtube\"\r\n}",
+					"raw": "{\r\n    \"slug\": \"\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -241,48 +252,20 @@
 					}
 				},
 				"url": {
-					"raw": "{{local_url}}/slug/61d33ad5c43a128f3c4e1089",
+					"raw": "{{local_url}}/slug/61be67aa1150adad81d7d9aa",
 					"host": [
 						"{{local_url}}"
 					],
 					"path": [
 						"slug",
-						"61d33ad5c43a128f3c4e1089"
+						"61be67aa1150adad81d7d9aa"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Delete Link",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{local_admin}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{local_url}}/slug/61d37ca6de4fb4533349f79d",
-					"host": [
-						"{{local_url}}"
-					],
-					"path": [
-						"slug",
-						"61d37ca6de4fb4533349f79d"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add Favorite",
+			"name": "Set Favorite",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -296,15 +279,24 @@
 				},
 				"method": "PUT",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"isFavorite\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{local_url}}/user/favorite/61d37ca6de4fb4533349f79d",
+					"raw": "{{local_url}}/slug/favorite/61be67aa1150adad81d7d9aa",
 					"host": [
 						"{{local_url}}"
 					],
 					"path": [
-						"user",
+						"slug",
 						"favorite",
-						"61d37ca6de4fb4533349f79d"
+						"61be67aa1150adad81d7d9aa"
 					]
 				}
 			},
@@ -347,7 +339,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{prod_admin}}",
+							"value": "{{local_admin}}",
 							"type": "string"
 						}
 					]
