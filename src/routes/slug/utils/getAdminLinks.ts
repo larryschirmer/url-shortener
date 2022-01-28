@@ -13,13 +13,24 @@ const getAdminLinks = async () => {
         return links
           .filter((link: PopulatedUrl) => link?.user?.isAdmin ?? false)
           .map(
-            ({ _id, name, slug, url, isListed, isFavorite, tags, opens }) => {
+            ({
+              _id,
+              name,
+              slug,
+              url,
+              isListed,
+              isFavorite,
+              description,
+              tags,
+              opens
+            }) => {
               return {
                 _id,
                 name,
                 slug,
                 url,
                 isListed,
+                description,
                 isFavorite,
                 tags,
                 opens

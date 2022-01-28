@@ -30,7 +30,7 @@ const controller = {
       }
     },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { name: linkName = '', slug, url, isListed = false, user } = body;
+      const { name: linkName = '', slug, url, isListed = false, description, user } = body;
 
       try {
         // construction
@@ -40,6 +40,8 @@ const controller = {
           slug: slug || nanoid(5).toLowerCase(),
           url,
           isListed: isAdmin ? isListed : false,
+          isFavorite: false,
+          description: description || '',
           tags: linkName.split(' ').filter(isTag),
           opens: [],
           user: new Types.ObjectId(user?._id)
@@ -61,6 +63,8 @@ const controller = {
           slug: newShortLink.slug,
           url: newShortLink.url,
           isListed: newShortLink.isListed,
+          isFavorite: newShortLink.isFavorite,
+          description: newShortLink.description,
           tags: newShortLink.tags,
           opens: newShortLink.opens
         });
@@ -74,7 +78,7 @@ const controller = {
       next: NextFunction
     ) => {
       const { linkId } = params;
-      const { name: linkName, url, isListed, slug, user } = body;
+      const { name: linkName, url, isListed, description, slug, user } = body;
 
       try {
         if (!linkId) throw new Error('`_id` is required');
@@ -102,6 +106,8 @@ const controller = {
           slug: newSlug,
           url: url || shortLink.url,
           isListed: isAdmin ? isListed ?? shortLink.isListed : false,
+          isFavorite: shortLink.isFavorite,
+          description: description || shortLink.description,
           tags: (linkName || shortLink.name).split(' ').filter(isTag),
           opens: shortLink.opens,
           user: shortLink.user

@@ -8,6 +8,7 @@ const UrlSchema = new Schema<Url>({
   url: { type: String, required: true },
   isListed: { type: Boolean, required: true },
   isFavorite: { type: Boolean, default: false },
+  description: { type: String },
   tags: { type: [String], required: true },
   opens: { type: [String], required: true },
   user: { type: Schema.Types.ObjectId, ref: 'User' }
