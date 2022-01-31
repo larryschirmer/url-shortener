@@ -7,9 +7,8 @@ const about = {
   description: 'A URL shortener built with Node.js and Express.js',
   author: 'Larry Schirmer',
   license: 'MIT',
-  version: '1.0.4',
-  releaseNotes:
-    'Store favorite status on the URL\nAllow for users to remove slug from existing link (replaced with random id)'
+  version: '1.0.5',
+  releaseNotes: 'Add support for link descriptions'
 };
 
 const controller = {
