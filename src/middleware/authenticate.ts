@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { tokenValidate, decodeUser } from '@utils/token';
 import User from '@db/users';
 
-const auth =
+const authenticate =
   ({ protect = false, isAdmin = false } = {}) =>
   async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -31,4 +31,4 @@ const auth =
     }
   };
 
-export default auth;
+export default authenticate;
