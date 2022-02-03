@@ -1,20 +1,16 @@
-import request from 'supertest';
+import { Request, Response, NextFunction } from 'express';
 
-import app from '../../app';
-
-const aboutJSONKeys = [
-  'name',
-  'description',
-  'author',
-  'license',
-  'version',
-  'releaseNotes'
-];
+import about, { aboutProperties } from '@routes/about/controller';
 
 describe('About', () => {
   it('should return the about page', async () => {
-    const response = await request(app).get('/about');
-    expect(response.status).toBe(200);
-    expect(Object.keys(response.body)).toStrictEqual(aboutJSONKeys);
+    const req = {} as Request;
+    const res = {} as Response;
+    res.json = jest.fn();
+    const next = jest.fn() as NextFunction;
+
+    await about['/'].get(req, res, next);
+
+    expect(res.json).toBeCalledWith(aboutProperties);
   });
 });

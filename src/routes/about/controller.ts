@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import parseError from '@utils/parseError';
 
-const about = {
+export const aboutProperties = {
   name: 'URL Shortener',
   description: 'A URL shortener built with Node.js and Express.js',
   author: 'Larry Schirmer',
@@ -15,7 +15,7 @@ const controller = {
   '/': {
     get: async (req: Request, res: Response, next: NextFunction) => {
       try {
-        res.json(about);
+        res.json(aboutProperties);
       } catch (e) {
         next(parseError(e));
       }
