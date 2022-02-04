@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { tokenValidate, decodeUser } from '@utils/token';
-import User from '@db/users';
+import { UserDocument } from '@db/users/types';
+import { tokenValidate, decodeUserId } from '@utils/token';
+import { getUser } from '@utils/dbio';
 
 const authenticate =
   ({ protect = false, isAdmin = false } = {}) =>
@@ -12,17 +13,22 @@ const authenticate =
 
     try {
       // validate token
-      if (protect) {
-        if (!token) throw new Error('Not Logged In');
-        tokenValidate(token);
-      }
       if (token) {
-        const userName = decodeUser(token);
-        const user = await User.findOne({ name: userName });
+        const isValid = tokenValidate(token);
+        if (!isValid) throw new Error('Invalid Token');
+      }
+      // protect routes
+      if (protect && !token) throw new Error('Not Logged In');
+      // get user
+      let user: UserDocument | null = null;
+      if (token) {
+        const userId = decodeUserId(token);
+        user = await getUser({ id: userId });
         if (!user) throw new Error('Username is not found');
         req.body.user = user;
-        if (isAdmin && !user.isAdmin) throw new Error('Not Authorized');
       }
+      // protect admin routes
+      if (isAdmin && !user?.isAdmin) throw new Error('Not Authorized');
 
       next();
     } catch (e) {
