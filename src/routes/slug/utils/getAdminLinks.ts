@@ -1,7 +1,7 @@
-import { TUser } from '@db/users';
+import { User } from '@db/users';
 import Url, { TUrl } from '@db/urls';
 
-type PopulatedUrl = TUrl & { _id: string; user?: TUser };
+type PopulatedUrl = TUrl & { _id: string; user?: User };
 
 const getAdminLinks = async () => {
   let links: PopulatedUrl[] = [];

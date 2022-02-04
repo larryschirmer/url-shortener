@@ -3,14 +3,12 @@ import { nanoid } from 'nanoid';
 import { Types } from 'mongoose';
 
 import Url, { urlSchema, TUrl } from '@db/urls';
-import User, { TUser } from '@db/users';
+import { UserDocument } from '@db/users/types';
 
 import parseError from '@utils/parseError';
 import { getUserLinks, getAdminLinks, isInUse } from './utils';
 
 const isTag = (word: string) => word[0] === '#';
-
-type TUserDoc = TUser & { _id: Types.ObjectId };
 
 const controller = {
   '/': {
@@ -132,12 +130,11 @@ const controller = {
       }
     },
     delete: async (
-      { params, body }: Request,
+      { params }: Request,
       res: Response,
       next: NextFunction
     ) => {
       const { linkId } = params;
-      const { user }: { user: TUserDoc } = body;
 
       try {
         if (!linkId) throw new Error('`_id` is required');
@@ -148,11 +145,6 @@ const controller = {
 
         // resolution
         await Url.findOneAndDelete({ _id: linkId });
-        const userUpdate = { favorites: [linkId] };
-        await User.findOneAndUpdate(
-          { _id: user._id },
-          { $pullAll: userUpdate }
-        );
 
         res.json({ success: true });
       } catch (e) {
@@ -170,7 +162,7 @@ const controller = {
       const {
         user,
         isFavorite
-      }: { user: TUserDoc; isFavorite: boolean | undefined } = body;
+      }: { user: UserDocument; isFavorite: boolean | undefined } = body;
 
       try {
         if (!linkId) throw new Error('`_id` is required');
