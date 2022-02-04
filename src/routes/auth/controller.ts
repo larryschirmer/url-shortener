@@ -1,20 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 
-import User from '@db/users';
 import { compare } from '@utils/hash';
 import { tokenGenerate } from '@utils/token';
 import parseError from '@utils/parseError';
+import { getUser } from '@utils/dbio';
 
 const controller = {
   '/': {
     get: async (req: Request, res: Response, next: NextFunction) => {
       const { user } = req.body;
       try {
-        const userSparse = await User.findOne(
-          { name: user.name },
-          'name favorites isAdmin'
-        ).lean();
-        res.json(userSparse);
+        res.json({ name: user.name, isAdmin: user.isAdmin });
       } catch (e) {
         next(parseError(e));
       }
@@ -26,18 +22,21 @@ const controller = {
         if (!name || !password) {
           return res.status(400).json({ error: 'missing user or password' });
         }
-        const user = await User.findOne({ name });
+        const user = await getUser({ name });
         const isValidPassword = await compare(password, user?.password ?? '');
-        if (name !== user?.name || !isValidPassword) {
+        if (!user?._id || name !== user?.name || !isValidPassword) {
           return res
             .status(400)
             .json({ error: 'provided user or password is not correct' });
         }
 
-        const token = tokenGenerate({ name });
+        const token = tokenGenerate({ id: user._id });
 
         //resolution
-        res.json({ token });
+        res
+          .header('Access-Control-Expose-Headers', 'token')
+          .set('token', token)
+          .json({ success: true });
       } catch (e) {
         next(e);
       }
