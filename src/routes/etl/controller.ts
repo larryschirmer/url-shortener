@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { Types } from 'mongoose';
 
 import { gen } from '@utils/hash';
 import parseError from '@utils/parseError';
-
-import User, { TUser } from '@db/users';
-import Url from '@db/urls';
+import { getUser, createUser, addUserToLinks } from '@utils/dbio';
+import { User } from '@db/users';
 
 const controller = {
   '/createUser': {
@@ -19,17 +17,17 @@ const controller = {
           typeof name !== 'string' ||
           typeof password !== 'string'
         ) {
-          return res.status(400).json({ error: 'missing user or password' });
+          return res.status(400).json({ error: 'Missing User or Password' });
         }
-        const foundUser = await User.findOne({ name });
+        const foundUser = await getUser({ name });
         if (foundUser !== null) {
-          return res.status(400).json({ error: 'user already exists' });
+          return res.status(400).json({ error: 'User Already Exists' });
         }
 
         // create user
         const hash = await gen(password);
-        const newUser: TUser = { name, password: hash, isAdmin };
-        await User.create(newUser);
+        const newUser: User = { name, password: hash, isAdmin };
+        await createUser(newUser);
 
         //resolution
         res.json({ success: true });
@@ -44,17 +42,14 @@ const controller = {
       try {
         // validate that provided user exists
         if (!userId || typeof userId !== 'string')
-          return res.status(400).json({ error: 'user is a required field' });
-        const foundUser = await User.findOne({ _id: userId });
+          return res.status(400).json({ error: 'Missing User Id' });
+        const foundUser = await getUser({ id: userId });
         if (foundUser === null) {
-          return res.status(400).json({ error: 'user does not exist' });
+          return res.status(400).json({ error: 'User Does Not Exist' });
         }
 
         // update all links with the new user
-        await Url.updateMany(
-          { user: { $exists: false } },
-          { $set: { user: new Types.ObjectId(userId) } }
-        );
+        await addUserToLinks(userId);
 
         //resolution
         res.json({ success: true });
