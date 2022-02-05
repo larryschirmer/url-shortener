@@ -1,9 +1,9 @@
-import Url, { TUrl } from '@db/urls';
+import UrlModel, { Url } from '@db/urls';
 
 const getUserLinks = async (userId: string) => {
-  let links: TUrl[] = [];
+  let links: Url[] = [];
   try {
-    links = await Url.find({ user: userId })
+    links = await UrlModel.find({ user: userId })
       .orFail()
       .then((links) => {
         return links.map(

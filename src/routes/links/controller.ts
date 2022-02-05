@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import urls from '@db/urls';
+import { getLinkWhere, updateLinkWhere } from '@utils/dbio';
 
 const controller = {
   '/': {
@@ -8,12 +8,12 @@ const controller = {
       const { slug } = req.params;
       try {
         // fetch
-        const shortLink = await urls.findOne({ slug });
+        const shortLink = await getLinkWhere({ slug });
         if (!shortLink?._id) throw new Error('slug is not in use');
 
         //resolution
         const currentTime = new Date().toISOString();
-        await urls.findOneAndUpdate(
+        await updateLinkWhere(
           { slug },
           { $push: { opens: currentTime } }
         );

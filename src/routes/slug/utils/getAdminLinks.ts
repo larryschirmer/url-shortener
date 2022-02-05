@@ -1,12 +1,12 @@
 import { User } from '@db/users';
-import Url, { TUrl } from '@db/urls';
+import UrlModel, { Url } from '@db/urls';
 
-type PopulatedUrl = TUrl & { _id: string; user?: User };
+type PopulatedUrl = Url & { _id: string; user?: User };
 
 const getAdminLinks = async () => {
   let links: PopulatedUrl[] = [];
   try {
-    links = await Url.find({ isListed: true })
+    links = await UrlModel.find({ isListed: true })
       .populate<PopulatedUrl[]>('user', 'isAdmin')
       .orFail()
       .then((links: PopulatedUrl[]) => {

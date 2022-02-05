@@ -2,10 +2,16 @@ import { Request, Response, NextFunction } from 'express';
 import { nanoid } from 'nanoid';
 import { Types } from 'mongoose';
 
-import Url, { urlSchema, TUrl } from '@db/urls';
+import { urlSchema, Url } from '@db/urls';
 import { UserDocument } from '@db/users/types';
 
 import parseError from '@utils/parseError';
+import {
+  createLink,
+  getLinkWhere,
+  updateLinkWhere,
+  deleteLinkWhere
+} from '@utils/dbio';
 import { getUserLinks, getAdminLinks, isInUse } from './utils';
 
 const isTag = (word: string) => word[0] === '#';
@@ -17,7 +23,7 @@ const controller = {
 
       try {
         // fetch
-        let links: TUrl[] = [];
+        let links: Url[] = [];
         if (user) links = await getUserLinks(user._id);
         else links = await getAdminLinks();
 
@@ -28,12 +34,19 @@ const controller = {
       }
     },
     post: async ({ body }: Request, res: Response, next: NextFunction) => {
-      const { name: linkName = '', slug, url, isListed = false, description, user } = body;
+      const {
+        name: linkName = '',
+        slug,
+        url,
+        isListed = false,
+        description,
+        user
+      } = body;
 
       try {
         // construction
         const isAdmin = user?.isAdmin;
-        const newShortLink: TUrl = {
+        const newShortLink: Url = {
           name: linkName.length ? linkName : 'Unnamed',
           slug: slug || nanoid(5).toLowerCase(),
           url,
@@ -51,9 +64,7 @@ const controller = {
           throw new Error('Slug is already in use');
 
         // resolution
-        const createdShortLinkId = await Url.create(newShortLink).then(
-          (link) => link.toObject()._id
-        );
+        const { _id: createdShortLinkId } = await createLink(newShortLink);
 
         res.json({
           _id: createdShortLinkId,
@@ -82,7 +93,7 @@ const controller = {
         if (!linkId) throw new Error('`_id` is required');
 
         // fetch
-        const shortLink = await Url.findOne({ _id: linkId });
+        const shortLink = await getLinkWhere({ _id: linkId });
         if (!shortLink) throw new Error('id is not in use');
         if (
           slug !== undefined &&
@@ -99,7 +110,7 @@ const controller = {
 
         // construction
         const isAdmin = user?.isAdmin;
-        const newShortLink: TUrl = {
+        const newShortLink: Url = {
           name: linkName || shortLink.name,
           slug: newSlug,
           url: url || shortLink.url,
@@ -115,13 +126,10 @@ const controller = {
         await urlSchema.validate(newShortLink);
 
         // resolution
-        const updatedShortLink = await Url.findOneAndUpdate(
+        const updatedShortLink = await updateLinkWhere(
           { _id: linkId },
           { $set: newShortLink },
-          {
-            new: true,
-            projection: '-__v -user'
-          }
+          ['-user']
         );
 
         res.json(updatedShortLink);
@@ -129,22 +137,18 @@ const controller = {
         next(parseError(e));
       }
     },
-    delete: async (
-      { params }: Request,
-      res: Response,
-      next: NextFunction
-    ) => {
+    delete: async ({ params }: Request, res: Response, next: NextFunction) => {
       const { linkId } = params;
 
       try {
         if (!linkId) throw new Error('`_id` is required');
 
         // fetch current short link
-        const shortLink = await Url.findOne({ _id: linkId });
+        const shortLink = await getLinkWhere({ _id: linkId });
         if (!shortLink) throw new Error('id is not in use');
 
         // resolution
-        await Url.findOneAndDelete({ _id: linkId });
+        await deleteLinkWhere({ _id: linkId });
 
         res.json({ success: true });
       } catch (e) {
@@ -170,7 +174,7 @@ const controller = {
           throw new Error('`isFavorite` is required');
 
         // fetch
-        const link = await Url.findById(linkId);
+        const link = await getLinkWhere({ _id: linkId });
         if (!link) throw new Error('Link not found');
 
         // validation
@@ -178,13 +182,10 @@ const controller = {
           throw new Error('Unauthorized');
 
         // resolution
-        const updatedShortLink = await Url.findOneAndUpdate(
+        const updatedShortLink = await updateLinkWhere(
           { _id: linkId },
           { $set: { isFavorite: isFavorite } },
-          {
-            new: true,
-            projection: '-__v -user'
-          }
+          ['-user']
         );
 
         res.json(updatedShortLink);

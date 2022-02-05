@@ -15,6 +15,6 @@ const UrlSchema = new Schema<Url>({
 });
 
 export { default as urlSchema } from './schema';
-export type { Url as TUrl } from './types';
+export type { Url } from './types';
 
 export default mongoose.model<Url>('Url', UrlSchema);
