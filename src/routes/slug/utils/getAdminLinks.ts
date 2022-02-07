@@ -1,17 +1,19 @@
+import { Types } from 'mongoose';
+
 import { User } from '@db/users';
 import UrlModel, { Url } from '@db/urls';
 
-type PopulatedUrl = Url & { _id: string; user?: User };
+type PopulatedUrl = Url & { _id: Types.ObjectId; user?: User };
 
 const getAdminLinks = async () => {
   let links: PopulatedUrl[] = [];
   try {
     links = await UrlModel.find({ isListed: true })
-      .populate<PopulatedUrl[]>('user', 'isAdmin')
+      .populate<PopulatedUrl>('user', 'isAdmin')
       .orFail()
-      .then((links: PopulatedUrl[]) => {
+      .then((links) => {
         return links
-          .filter((link: PopulatedUrl) => link?.user?.isAdmin ?? false)
+          .filter((link) => link?.user?.isAdmin ?? false)
           .map(
             ({
               _id,

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { UserDocument } from '@db/users/types';
+import { User } from '@db/users/types';
 import { tokenValidate, decodeUserId } from '@utils/token';
 import { getUser } from '@utils/dbio';
 
@@ -20,7 +20,7 @@ const authenticate =
       // protect routes
       if (protect && !token) throw new Error('Not Logged In');
       // get user
-      let user: UserDocument | null = null;
+      let user: User | null = null;
       if (token) {
         const userId = decodeUserId(token);
         user = await getUser({ id: userId });
