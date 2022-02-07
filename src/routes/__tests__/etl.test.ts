@@ -45,12 +45,11 @@ describe('ETL', () => {
     it('should return success', async () => {
       req.body = { name: 'name', password: 'password' };
 
-      getUserMock.mockResolvedValue({ _id: null } as UserDocument);
-      createUserMock.mockResolvedValue();
+      getUserMock.mockResolvedValue(null);
       genMock.mockResolvedValue('password');
+      createUserMock.mockResolvedValue();
 
       await etl['/createUser'].post(req, res, next);
-      expect(res.status).toBeCalledWith(200);
       expect(res.json).toBeCalledWith({ success: true });
     });
   });
@@ -79,7 +78,6 @@ describe('ETL', () => {
       addUserToLinksMock.mockResolvedValue();
 
       await etl['/addUserToLinks'].post(req, res, next);
-      expect(res.status).toBeCalledWith(200);
       expect(res.json).toBeCalledWith({ success: true });
     });
   });
