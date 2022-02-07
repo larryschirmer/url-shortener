@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import { Types } from 'mongoose';
 
 import { User } from '@db/users/types';
-import { tokenValidate, decodeUserId } from '@utils/token';
+import { tokenValidate, decodeUserId, tokenGenerate } from '@utils/token';
 import { getUser } from '@utils/dbio';
 
 const authenticate =
@@ -20,12 +21,24 @@ const authenticate =
       // protect routes
       if (protect && !token) throw new Error('Not Logged In');
       // get user
-      let user: User | null = null;
+      let user:
+        | (User & {
+            _id: Types.ObjectId;
+          })
+        | null = null;
       if (token) {
         const userId = decodeUserId(token);
         user = await getUser({ id: userId });
         if (!user) throw new Error('Username is not found');
         req.body.user = user;
+
+        // update token
+        const tokenRefresh = tokenGenerate({ id: user._id.toString() });
+
+        // return updated token
+        res
+          .header('Access-Control-Expose-Headers', 'token')
+          .set('token', tokenRefresh);
       }
       // protect admin routes
       if (isAdmin && !user?.isAdmin) throw new Error('Not Authorized');
