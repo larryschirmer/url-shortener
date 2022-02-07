@@ -7,7 +7,7 @@ import { UserDocument } from '@db/users/types';
 
 jest.mock('@utils/token/tokenValidate');
 jest.mock('@utils/token/decodeUserId');
-jest.mock('@utils/dbio/getUser');
+jest.mock('@utils/dbio/user/getUser');
 
 const tokenValidateMock = tokenValidate as jest.Mock<
   ReturnType<typeof tokenValidate>

@@ -5,9 +5,9 @@ import { getUser, createUser, addUserToLinks } from '@utils/dbio';
 import { gen } from '@utils/hash';
 import { UserDocument } from '@db/users/types';
 
-jest.mock('@utils/dbio/getUser');
-jest.mock('@utils/dbio/createUser');
-jest.mock('@utils/dbio/addUserToLinks');
+jest.mock('@utils/dbio/user/getUser');
+jest.mock('@utils/dbio/user/createUser');
+jest.mock('@utils/dbio/url/addUserToLinks');
 jest.mock('@utils/hash/gen');
 
 const getUserMock = getUser as jest.Mock<ReturnType<typeof getUser>>;

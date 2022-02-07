@@ -7,7 +7,7 @@ import { getUser } from '@utils/dbio';
 import { compare } from '@utils/hash';
 import { tokenGenerate } from '@utils/token';
 
-jest.mock('@utils/dbio/getUser');
+jest.mock('@utils/dbio/user/getUser');
 jest.mock('@utils/hash/compare');
 jest.mock('@utils/token/tokenGenerate');
 
