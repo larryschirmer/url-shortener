@@ -15,6 +15,7 @@ const tokenValidate = (token: string) => {
     jwt.verify(token, secret);
     return true;
   } catch (e) {
+    console.error(e);
     return false;
   }
 };
