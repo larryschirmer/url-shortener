@@ -33,7 +33,7 @@ const authenticate =
         req.body.user = user;
 
         // update token
-        const tokenRefresh = tokenGenerate({ id: user._id.toString() });
+        const tokenRefresh = tokenGenerate({ name: user.name });
 
         // return updated token
         res

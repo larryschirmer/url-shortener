@@ -11,7 +11,7 @@ import jwt from 'jsonwebtoken';
 const decodeUserId = (token: string) => {
   const decoded = jwt.decode(token);
   if (typeof decoded === 'string' || decoded === null) return null;
-  return decoded.id;
+  return decoded.name;
 };
 
 export default decodeUserId;
