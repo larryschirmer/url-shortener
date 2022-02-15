@@ -14,4 +14,4 @@ RUN npm install --only=prod
 EXPOSE 1337
 CMD ["npm", "start"]
 
-# docker build -t larryschirmer/url-short:1.0.7 .
+# docker build -t larryschirmer/url-short:1.0.9 .

@@ -7,8 +7,8 @@ export const aboutProperties = {
   description: 'A URL shortener built with Node.js and Express.js',
   author: 'Larry Schirmer',
   license: 'MIT',
-  version: '1.0.7',
-  releaseNotes: 'Use user name in jwt token'
+  version: '1.0.9',
+  releaseNotes: 'Remove temp console error for prod testing'
 };
 
 const controller = {
