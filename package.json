@@ -1,6 +1,6 @@
 {
   "name": "url-shortener",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Express REST API for URL Shortener",
   "main": "index.js",
   "scripts": {
