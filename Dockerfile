@@ -1,6 +1,11 @@
 FROM mhart/alpine-node:16.4 as base
 
-COPY . /app
+# include only folders/files that are needed for build
+COPY ./tsconfig.json /app/tsconfig.json
+COPY ./package.json /app/package.json
+COPY ./package-lock.json /app/package-lock.json
+COPY ./src /app/src
+
 WORKDIR /app
 RUN npm install
 RUN npm run build
