@@ -5,21 +5,21 @@ The REST API for the URL Shortener application.
 ### Overview:
 
 - Admin:
-    - GET /etl/createUser - Create a new user
+  - GET /etl/createUser - Create a new user
 - API Info:
-    - GET /about - Get information about the API
+  - GET /about - Get information about the API
 - Link CRUD:
-    - GET /slug - Get all links
-    - POST /slug - Create a new link
-    - PUT /slug/:id - Update a link
-    - DELETE /slug/:id - Delete a link
-    - PUT /slug/favorite/:id - Favorite a link
+  - GET /slug - Get all links
+  - POST /slug - Create a new link
+  - PUT /slug/:id - Update a link
+  - DELETE /slug/:id - Delete a link
+  - PUT /slug/favorite/:id - Favorite a link
 - Link Requests:
-    - GET /slug/isValid?slug=slugName - Check if a link slug is currently in use
-    - GET /slugName - Request to be redirected to a link
+  - GET /slugName - Request to be redirected to a link
+  - GET /slug/isValid?slug=slugName - Check if a link slug is currently in use
 - User Authentication:
-    - POST /auth - Login as a user
-    - GET /auth - Return user info cooresponding to the token
+  - POST /auth - Login as a user
+  - GET /auth - Return user info cooresponding to the token
 
 ### Private Routes:
 
@@ -31,6 +31,33 @@ Private routes are only accessible with a valid token. Tokens are generated usin
 - DELETE /slug/:id - Delete a link
 - PUT /slug/favorite/:id - Favorite a link
 - GET /auth - Return user info cooresponding to the token
+
+## Create User (Admin)
+
+Creates a new user with the specified name and password. This endpoint is only accessible by admin users.
+
+### Request
+
+`POST /etl/createUser`
+
+    curl -X POST 'http://localhost:1337/etl/createUser' \
+        -H 'Authorization: Bearer jwt-token' \
+        -H 'Content-Type: application/json' \
+        -d '{
+            "name": "user",
+            "password": "abc123",
+            "isAdmin": false
+        }'
+
+### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
+    { "success": true }
 
 ## About
 
@@ -58,73 +85,6 @@ Body:
         "license": "MIT",
         "version": "1.0.X",
         "releaseNotes": "Add new endpoint"
-    }
-
-## Redirect
-
-Redirects user to the corresponding URL if the slug is found.
-
-### Request
-
-`GET /:slug`
-
-    curl -X GET 'http://localhost:1337/:slug'
-
-## Login
-
-There are two types of users in this application:
-
-- Admin users:
-  - Can create/edit/delete short URLs
-  - Can use ETL endpoints
-  - Can create "Listed" URLs (i.e. URLs that are shows to non-logged in users)
-- Guest users:
-  - Can create/edit/delete short URLs
-  - Cannot use ETL endpoints
-  - Cannot create "Listed" URLs
-
-For non-logged in users, the home page will show a list of all "Listed" URLs. These will belong to any of the admin users. If a user is logged in, they will see a list of only the links they have created.
-
-### Request
-
-`POST /auth`
-
-    curl -X POST 'http://localhost:1337/auth' \
-        -H 'Content-Type: application/json' \
-        -d '{"name": "admin", "password": "password"}'
-
-### Response
-
-Headers:
-
-    { "token": jwt-token }
-
-Body:
-
-    { "success": true }
-
-## Get User
-
-Authenticated users can get their own information.
-
-### Request
-
-`GET /auth`
-
-    curl -X GET 'http://localhost:1337/auth' \
-        -H 'Authorization: Bearer jwt-token'
-
-### Response
-
-Headers:
-
-    { "token": jwt-token }
-
-Body:
-
-    {
-        "name": "admin",
-        "isAdmin": true,
     }
 
 ## Get All Links
@@ -198,22 +158,6 @@ Body:
             "opens": []
         }
     ]
-
-## Prevalidate Slug
-
-Utility endpoint to check if a slug is available. Returns true if available, false if not.
-
-### Request
-
-`GET /slug/isValid?slug=slugName`
-
-    curl -X GET 'http://localhost:1337/slug/isValid?slug=slugName'
-
-### Response
-
-Body:
-
-    { "isValid": true }
 
 ## Create Link
 
@@ -341,22 +285,54 @@ Body:
         "opens": []
     }
 
-## Create User (Admin)
+## Redirect
 
-Creates a new user with the specified name and password. This endpoint is only accessible by admin users.
+Redirects user to the corresponding URL if the slug is found.
 
 ### Request
 
-`POST /etl/createUser`
+`GET /:slug`
 
-    curl -X POST 'http://localhost:1337/etl/createUser' \
-        -H 'Authorization: Bearer jwt-token' \
+    curl -X GET 'http://localhost:1337/:slug'
+
+## Prevalidate Slug
+
+Utility endpoint to check if a slug is available. Returns true if available, false if not.
+
+### Request
+
+`GET /slug/isValid?slug=slugName`
+
+    curl -X GET 'http://localhost:1337/slug/isValid?slug=slugName'
+
+### Response
+
+Body:
+
+    { "isValid": true }
+
+## Login
+
+There are two types of users in this application:
+
+- Admin users:
+  - Can create/edit/delete short URLs
+  - Can use ETL endpoints
+  - Can create "Listed" URLs (i.e. URLs that are shows to non-logged in users)
+- Guest users:
+  - Can create/edit/delete short URLs
+  - Cannot use ETL endpoints
+  - Cannot create "Listed" URLs
+
+For non-logged in users, the home page will show a list of all "Listed" URLs. These will belong to any of the admin users. If a user is logged in, they will see a list of only the links they have created.
+
+### Request
+
+`POST /auth`
+
+    curl -X POST 'http://localhost:1337/auth' \
         -H 'Content-Type: application/json' \
-        -d '{
-            "name": "user",
-            "password": "abc123",
-            "isAdmin": false
-        }'
+        -d '{"name": "admin", "password": "password"}'
 
 ### Response
 
@@ -367,3 +343,27 @@ Headers:
 Body:
 
     { "success": true }
+
+## Get User
+
+Authenticated users can get their own information.
+
+### Request
+
+`GET /auth`
+
+    curl -X GET 'http://localhost:1337/auth' \
+        -H 'Authorization: Bearer jwt-token'
+
+### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
+    {
+        "name": "admin",
+        "isAdmin": true,
+    }
