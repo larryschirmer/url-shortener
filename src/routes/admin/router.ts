@@ -3,17 +3,17 @@ import controller from './controller';
 
 import { authenticate } from '@middleware/index';
 
-const etl = express.Router();
+const admin = express.Router();
 
-etl.post(
+admin.post(
   '/createUser',
   authenticate({ protect: true, isAdmin: true }),
   controller['/createUser'].post
 );
-etl.post(
+admin.post(
   '/addUserToLinks',
   authenticate({ protect: true, isAdmin: true }),
   controller['/addUserToLinks'].post
 );
 
-export default etl;
+export default admin;

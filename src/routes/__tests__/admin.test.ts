@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import etl from '@routes/etl/controller';
+import admin from '@routes/admin/controller';
 import { getUser, createUser, addUserToLinks } from '@utils/dbio';
 import { gen } from '@utils/hash';
 import { UserDocument } from '@db/users/types';
@@ -17,7 +17,7 @@ const addUserToLinksMock = addUserToLinks as jest.Mock<
 >;
 const genMock = gen as jest.Mock<ReturnType<typeof gen>>;
 
-describe('ETL', () => {
+describe('Admin', () => {
   const req = {} as Request;
   req.body = {};
   const res = {} as Response;
@@ -27,7 +27,7 @@ describe('ETL', () => {
 
   describe('createUser', () => {
     it('should return error if body is missing args', async () => {
-      await etl['/createUser'].post(req, res, next);
+      await admin['/createUser'].post(req, res, next);
       expect(res.status).toBeCalledWith(400);
       expect(res.json).toBeCalledWith({ error: 'Missing User or Password' });
     });
@@ -37,7 +37,7 @@ describe('ETL', () => {
 
       getUserMock.mockResolvedValue({ _id: 'user-id' } as UserDocument);
 
-      await etl['/createUser'].post(req, res, next);
+      await admin['/createUser'].post(req, res, next);
       expect(res.status).toBeCalledWith(400);
       expect(res.json).toBeCalledWith({ error: 'User Already Exists' });
     });
@@ -49,14 +49,14 @@ describe('ETL', () => {
       genMock.mockResolvedValue('password');
       createUserMock.mockResolvedValue();
 
-      await etl['/createUser'].post(req, res, next);
+      await admin['/createUser'].post(req, res, next);
       expect(res.json).toBeCalledWith({ success: true });
     });
   });
 
   describe('addUserToLinks', () => {
     it('should return error if userId is missing', async () => {
-      await etl['/addUserToLinks'].post(req, res, next);
+      await admin['/addUserToLinks'].post(req, res, next);
       expect(res.status).toBeCalledWith(400);
       expect(res.json).toBeCalledWith({ error: 'Missing User Id' });
     });
@@ -66,7 +66,7 @@ describe('ETL', () => {
 
       getUserMock.mockResolvedValue(null);
 
-      await etl['/addUserToLinks'].post(req, res, next);
+      await admin['/addUserToLinks'].post(req, res, next);
       expect(res.status).toBeCalledWith(400);
       expect(res.json).toBeCalledWith({ error: 'User Does Not Exist' });
     });
@@ -77,7 +77,7 @@ describe('ETL', () => {
       getUserMock.mockResolvedValue({ _id: 'user-id' } as UserDocument);
       addUserToLinksMock.mockResolvedValue();
 
-      await etl['/addUserToLinks'].post(req, res, next);
+      await admin['/addUserToLinks'].post(req, res, next);
       expect(res.json).toBeCalledWith({ success: true });
     });
   });

@@ -21,8 +21,6 @@ This is the backend for the Lnk Shrtnr application. Built with:
 
 ## Usage
 
-- [Postman Collection](https://raw.githubusercontent.com/larryschirmer/url-shortener/main/docs/Url%20Shortener.postman_collection.json)
-  - This collection has an embedded environment variable to make it easier to test the API. You can use the `{{local_admin}}` variable by adding it after testing the login endpoint. [Postman Docs - Variables](https://learning.postman.com/docs/sending-requests/variables/)
 - [API Docs](https://github.com/larryschirmer/url-shortener/tree/main/docs)
 
 ## Installation
@@ -42,7 +40,7 @@ This application expects to find a running mongo database running at 27017. I us
 
 ## Populating the database
 
-Before running the application, you need to populate the database with an intial user. Creating additional users is supported via an ETL endpoint, but this requires that the request be sent with a valid admin jwt token.
+Before running the application, you need to populate the database with an intial user. Creating additional users is supported via an Admin endpoint, but this requires that the request be sent with a valid admin jwt token.
 
 - Add admin user to database manually
   - build project `npm run build`

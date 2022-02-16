@@ -5,7 +5,7 @@ The REST API for the URL Shortener application.
 ### Overview:
 
 - Admin:
-  - GET /etl/createUser - Create a new user
+  - GET /admin/createUser - Create a new user
 - API Info:
   - GET /about - Get information about the API
 - Link CRUD:
@@ -25,7 +25,7 @@ The REST API for the URL Shortener application.
 
 Private routes are only accessible with a valid token. Tokens are generated using the GET /auth route and included in the request header. To access a private route, include the token in the request header as an Authorization Bearer token.
 
-- GET /etl/createUser - Create a new user
+- GET /admin/createUser - Create a new user
 - POST /slug - Create a new link
 - PUT /slug/:id - Update a link
 - DELETE /slug/:id - Delete a link
@@ -38,9 +38,9 @@ Creates a new user with the specified name and password. This endpoint is only a
 
 ### Request
 
-`POST /etl/createUser`
+`POST /admin/createUser`
 
-    curl -X POST 'http://localhost:1337/etl/createUser' \
+    curl -X POST 'http://localhost:1337/admin/createUser' \
         -H 'Authorization: Bearer jwt-token' \
         -H 'Content-Type: application/json' \
         -d '{
@@ -317,11 +317,11 @@ There are two types of users in this application:
 
 - Admin users:
   - Can create/edit/delete short URLs
-  - Can use ETL endpoints
+  - Can use Admin endpoints
   - Can create "Listed" URLs (i.e. URLs that are shows to non-logged in users)
 - Guest users:
   - Can create/edit/delete short URLs
-  - Cannot use ETL endpoints
+  - Cannot use Admin endpoints
   - Cannot create "Listed" URLs
 
 For non-logged in users, the home page will show a list of all "Listed" URLs. These will belong to any of the admin users. If a user is logged in, they will see a list of only the links they have created.
