@@ -2,6 +2,36 @@
 
 The REST API for the URL Shortener application.
 
+### Overview:
+
+- Admin:
+    - GET /etl/createUser - Create a new user
+- API Info:
+    - GET /about - Get information about the API
+- Link CRUD:
+    - GET /slug - Get all links
+    - POST /slug - Create a new link
+    - PUT /slug/:id - Update a link
+    - DELETE /slug/:id - Delete a link
+    - PUT /slug/favorite/:id - Favorite a link
+- Link Requests:
+    - GET /slug/isValid?slug=slugName - Check if a link slug is currently in use
+    - GET /slugName - Request to be redirected to a link
+- User Authentication:
+    - POST /auth - Login as a user
+    - GET /auth - Return user info cooresponding to the token
+
+### Private Routes:
+
+Private routes are only accessible with a valid token. Tokens are generated using the GET /auth route and included in the request header. To access a private route, include the token in the request header as an Authorization Bearer token.
+
+- GET /etl/createUser - Create a new user
+- POST /slug - Create a new link
+- PUT /slug/:id - Update a link
+- DELETE /slug/:id - Delete a link
+- PUT /slug/favorite/:id - Favorite a link
+- GET /auth - Return user info cooresponding to the token
+
 ## About
 
 Returns a JSON object with details about the app including:
@@ -13,11 +43,13 @@ Returns a JSON object with details about the app including:
 
 ### Request
 
-`GET /slug/isValid?slug=slugName`
+`GET /slug/about`
 
     curl -X GET 'http://localhost:1337/about'
 
 ### Response
+
+Body:
 
     {
         "name": "URL Shortener",
@@ -63,9 +95,13 @@ For non-logged in users, the home page will show a list of all "Listed" URLs. Th
 
 ### Response
 
-    {
-        "token": jwt-token
-    }
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
+    { "success": true }
 
 ## Get User
 
@@ -79,6 +115,12 @@ Authenticated users can get their own information.
         -H 'Authorization: Bearer jwt-token'
 
 ### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
 
     {
         "name": "admin",
@@ -104,6 +146,8 @@ Returns all links that are "Listed". These links belong to any of the admin user
 
 ### Response
 
+Body:
+
     [
         {
             "_id": "61be2b2e003d33d6c33f5f8b",
@@ -125,6 +169,12 @@ Returns all links that belong to the logged in user.
         -H 'Authorization: Bearer jwt-token'
 
 ### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
 
     [
         {
@@ -161,9 +211,9 @@ Utility endpoint to check if a slug is available. Returns true if available, fal
 
 ### Response
 
-    {
-        "isValid": true
-    }
+Body:
+
+    { "isValid": true }
 
 ## Create Link
 
@@ -184,6 +234,12 @@ Creates a new link. `url` is a required field, all others are optional.
         }'
 
 ### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
 
     {
         "_id": "61be680a1150adad81d7d9af",
@@ -213,6 +269,12 @@ Uses the `linkId` param to select a link to update. All fields are optional. Any
 
 ### Response
 
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
     {
         "_id": "61be680a1150adad81d7d9af",
         "name": "Youtube #social #video #fun!",
@@ -237,15 +299,21 @@ Uses the `linkId` param to select a link to delete.
 
 ### Response
 
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
     { "success": true }
 
 ## Set Favorite
 
-Uses the `linkId` param to mark a link as favorite.
+Uses the `linkId` param to mark a link as favorite. Links can only be favorited by the user that created them.
 
 ### Request
 
-`PUT /user/favorite/:linkId`
+`PUT /slug/favorite/:linkId`
 
     curl -X PUT 'http://localhost:1337/slug/favorite/:linkId' \
         -H 'Authorization: Bearer jwt-token'
@@ -255,6 +323,12 @@ Uses the `linkId` param to mark a link as favorite.
         }'
 
 ### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
 
     {
         "_id": "61be680a1150adad81d7d9af",
@@ -286,23 +360,10 @@ Creates a new user with the specified name and password. This endpoint is only a
 
 ### Response
 
-    { "success": true }
+Headers:
 
-## Append User to Links (Admin)
+    { "token": jwt-token }
 
-**Deprecated** This endpoint is no longer used. The purpose of this endpoint was to allow users to be added to links that were created before the multi-user feature was implemented.
-
-### Request
-
-`POST /etl/addUserToLinks`
-
-    curl -X POST 'http://localhost:1337/etl/addUserToLinks' \
-        -H 'Authorization: Bearer jwt-token' \
-        -H 'Content-Type: application/json' \
-        -d '{
-            "userId": "61b9127b4f2cca57a204ac56"
-        }'
-
-### Response
+Body:
 
     { "success": true }
