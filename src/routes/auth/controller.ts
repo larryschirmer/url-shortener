@@ -30,7 +30,7 @@ const controller = {
             .json({ error: 'provided user or password is not correct' });
         }
 
-        const token = tokenGenerate({ id: user._id.toString() });
+        const token = tokenGenerate({ name: user.name });
 
         //resolution
         res

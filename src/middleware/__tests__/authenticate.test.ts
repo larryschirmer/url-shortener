@@ -2,20 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
 import authenticate from '../authenticate';
-import { tokenValidate, decodeUserId, tokenGenerate } from '@utils/token';
+import { tokenValidate, decodeUserName, tokenGenerate } from '@utils/token';
 import { getUser } from '@utils/dbio';
 import { UserDocument } from '@db/users/types';
 
 jest.mock('@utils/token/tokenValidate');
-jest.mock('@utils/token/decodeUserId');
+jest.mock('@utils/token/decodeUserName');
 jest.mock('@utils/token/tokenGenerate');
 jest.mock('@utils/dbio/user/getUser');
 
 const tokenValidateMock = tokenValidate as jest.Mock<
   ReturnType<typeof tokenValidate>
 >;
-const decodeUserIdMock = decodeUserId as jest.Mock<
-  ReturnType<typeof decodeUserId>
+const decodeUserNameMock = decodeUserName as jest.Mock<
+  ReturnType<typeof decodeUserName>
 >;
 const tokenGenerateMock = tokenGenerate as jest.Mock<
   ReturnType<typeof tokenGenerate>
@@ -54,7 +54,7 @@ describe('Middleware - Authenticate', () => {
     req.headers = { authorization: 'Bearer token' };
 
     tokenValidateMock.mockReturnValue(true);
-    decodeUserIdMock.mockReturnValue('user-id');
+    decodeUserNameMock.mockReturnValue('user-name');
     getUserMock.mockResolvedValue(null);
 
     await authenticate()(req, res, next);
@@ -66,7 +66,7 @@ describe('Middleware - Authenticate', () => {
     req.headers = { authorization: 'Bearer token' };
 
     tokenValidateMock.mockReturnValue(true);
-    decodeUserIdMock.mockReturnValue('a1b2c3d4e5f6');
+    decodeUserNameMock.mockReturnValue('user-name');
     getUserMock.mockResolvedValue({
       _id: new Types.ObjectId('a1b2c3d4e5f6')
     } as UserDocument);
@@ -82,7 +82,7 @@ describe('Middleware - Authenticate', () => {
     req.headers = { authorization: 'Bearer token' };
 
     tokenValidateMock.mockReturnValue(true);
-    decodeUserIdMock.mockReturnValue('a1b2c3d4e5f6');
+    decodeUserNameMock.mockReturnValue('user-name');
     getUserMock.mockResolvedValue({
       _id: new Types.ObjectId('a1b2c3d4e5f6'),
       isAdmin: false

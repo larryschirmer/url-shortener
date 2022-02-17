@@ -2,7 +2,7 @@ import Url from '@db/urls';
 
 const isInUse = async (slug: string) => {
   if (!slug) return false;
-  const reservedSlugs = ['about', 'auth', 'slug', 'etl'];
+  const reservedSlugs = ['about', 'auth', 'slug', 'admin'];
   if (reservedSlugs.includes(slug)) return true;
 
   const url = await Url.findOne({ slug });

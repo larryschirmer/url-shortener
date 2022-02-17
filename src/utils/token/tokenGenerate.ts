@@ -12,8 +12,8 @@ const secret = process.env.TOKEN_SECRET || '';
  * @param {string} body.id - the id of the user
  * @returns String
  */
-const tokenGenerate = (body: { id: string }) => {
-  return jwt.sign({ id: body.id }, secret, {
+const tokenGenerate = (body: { name: string }) => {
+  return jwt.sign({ name: body.name }, secret, {
     expiresIn: '7d'
   });
 };

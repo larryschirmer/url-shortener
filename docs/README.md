@@ -2,6 +2,63 @@
 
 The REST API for the URL Shortener application.
 
+### Overview:
+
+- Admin:
+  - GET /admin/createUser - Create a new user
+- API Info:
+  - GET /about - Get information about the API
+- Link CRUD:
+  - GET /slug - Get all links
+  - POST /slug - Create a new link
+  - PUT /slug/:id - Update a link
+  - DELETE /slug/:id - Delete a link
+  - PUT /slug/favorite/:id - Favorite a link
+- Link Requests:
+  - GET /slugName - Request to be redirected to a link
+  - GET /slug/isValid?slug=slugName - Check if a link slug is currently in use
+- User Authentication:
+  - POST /auth - Login as a user
+  - GET /auth - Return user info cooresponding to the token
+
+### Private Routes:
+
+Private routes are only accessible with a valid token. Tokens are generated using the GET /auth route and included in the request header. To access a private route, include the token in the request header as an Authorization Bearer token.
+
+- GET /admin/createUser - Create a new user
+- POST /slug - Create a new link
+- PUT /slug/:id - Update a link
+- DELETE /slug/:id - Delete a link
+- PUT /slug/favorite/:id - Favorite a link
+- GET /auth - Return user info cooresponding to the token
+
+## Create User (Admin)
+
+Creates a new user with the specified name and password. This endpoint is only accessible by admin users.
+
+### Request
+
+`POST /admin/createUser`
+
+    curl -X POST 'http://localhost:1337/admin/createUser' \
+        -H 'Authorization: Bearer jwt-token' \
+        -H 'Content-Type: application/json' \
+        -d '{
+            "name": "user",
+            "password": "abc123",
+            "isAdmin": false
+        }'
+
+### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
+    { "success": true }
+
 ## About
 
 Returns a JSON object with details about the app including:
@@ -13,11 +70,13 @@ Returns a JSON object with details about the app including:
 
 ### Request
 
-`GET /slug/isValid?slug=slugName`
+`GET /slug/about`
 
     curl -X GET 'http://localhost:1337/about'
 
 ### Response
+
+Body:
 
     {
         "name": "URL Shortener",
@@ -26,63 +85,6 @@ Returns a JSON object with details about the app including:
         "license": "MIT",
         "version": "1.0.X",
         "releaseNotes": "Add new endpoint"
-    }
-
-## Redirect
-
-Redirects user to the corresponding URL if the slug is found.
-
-### Request
-
-`GET /:slug`
-
-    curl -X GET 'http://localhost:1337/:slug'
-
-## Login
-
-There are two types of users in this application:
-
-- Admin users:
-  - Can create/edit/delete short URLs
-  - Can use ETL endpoints
-  - Can create "Listed" URLs (i.e. URLs that are shows to non-logged in users)
-- Guest users:
-  - Can create/edit/delete short URLs
-  - Cannot use ETL endpoints
-  - Cannot create "Listed" URLs
-
-For non-logged in users, the home page will show a list of all "Listed" URLs. These will belong to any of the admin users. If a user is logged in, they will see a list of only the links they have created.
-
-### Request
-
-`POST /auth`
-
-    curl -X POST 'http://localhost:1337/auth' \
-        -H 'Content-Type: application/json' \
-        -d '{"name": "admin", "password": "password"}'
-
-### Response
-
-    {
-        "token": jwt-token
-    }
-
-## Get User
-
-Authenticated users can get their own information.
-
-### Request
-
-`GET /auth`
-
-    curl -X GET 'http://localhost:1337/auth' \
-        -H 'Authorization: Bearer jwt-token'
-
-### Response
-
-    {
-        "name": "admin",
-        "isAdmin": true,
     }
 
 ## Get All Links
@@ -103,6 +105,8 @@ Returns all links that are "Listed". These links belong to any of the admin user
     curl -X GET 'http://localhost:1337/slug'
 
 ### Response
+
+Body:
 
     [
         {
@@ -125,6 +129,12 @@ Returns all links that belong to the logged in user.
         -H 'Authorization: Bearer jwt-token'
 
 ### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
 
     [
         {
@@ -149,22 +159,6 @@ Returns all links that belong to the logged in user.
         }
     ]
 
-## Prevalidate Slug
-
-Utility endpoint to check if a slug is available. Returns true if available, false if not.
-
-### Request
-
-`GET /slug/isValid?slug=slugName`
-
-    curl -X GET 'http://localhost:1337/slug/isValid?slug=slugName'
-
-### Response
-
-    {
-        "isValid": true
-    }
-
 ## Create Link
 
 Creates a new link. `url` is a required field, all others are optional.
@@ -184,6 +178,12 @@ Creates a new link. `url` is a required field, all others are optional.
         }'
 
 ### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
 
     {
         "_id": "61be680a1150adad81d7d9af",
@@ -213,6 +213,12 @@ Uses the `linkId` param to select a link to update. All fields are optional. Any
 
 ### Response
 
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
     {
         "_id": "61be680a1150adad81d7d9af",
         "name": "Youtube #social #video #fun!",
@@ -237,15 +243,21 @@ Uses the `linkId` param to select a link to delete.
 
 ### Response
 
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
     { "success": true }
 
 ## Set Favorite
 
-Uses the `linkId` param to mark a link as favorite.
+Uses the `linkId` param to mark a link as favorite. Links can only be favorited by the user that created them.
 
 ### Request
 
-`PUT /user/favorite/:linkId`
+`PUT /slug/favorite/:linkId`
 
     curl -X PUT 'http://localhost:1337/slug/favorite/:linkId' \
         -H 'Authorization: Bearer jwt-token'
@@ -255,6 +267,12 @@ Uses the `linkId` param to mark a link as favorite.
         }'
 
 ### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
 
     {
         "_id": "61be680a1150adad81d7d9af",
@@ -267,42 +285,85 @@ Uses the `linkId` param to mark a link as favorite.
         "opens": []
     }
 
-## Create User (Admin)
+## Redirect
 
-Creates a new user with the specified name and password. This endpoint is only accessible by admin users.
-
-### Request
-
-`POST /etl/createUser`
-
-    curl -X POST 'http://localhost:1337/etl/createUser' \
-        -H 'Authorization: Bearer jwt-token' \
-        -H 'Content-Type: application/json' \
-        -d '{
-            "name": "user",
-            "password": "abc123",
-            "isAdmin": false
-        }'
-
-### Response
-
-    { "success": true }
-
-## Append User to Links (Admin)
-
-**Deprecated** This endpoint is no longer used. The purpose of this endpoint was to allow users to be added to links that were created before the multi-user feature was implemented.
+Redirects user to the corresponding URL if the slug is found.
 
 ### Request
 
-`POST /etl/addUserToLinks`
+`GET /:slug`
 
-    curl -X POST 'http://localhost:1337/etl/addUserToLinks' \
-        -H 'Authorization: Bearer jwt-token' \
-        -H 'Content-Type: application/json' \
-        -d '{
-            "userId": "61b9127b4f2cca57a204ac56"
-        }'
+    curl -X GET 'http://localhost:1337/:slug'
+
+## Prevalidate Slug
+
+Utility endpoint to check if a slug is available. Returns true if available, false if not.
+
+### Request
+
+`GET /slug/isValid?slug=slugName`
+
+    curl -X GET 'http://localhost:1337/slug/isValid?slug=slugName'
 
 ### Response
 
+Body:
+
+    { "isValid": true }
+
+## Login
+
+There are two types of users in this application:
+
+- Admin users:
+  - Can create/edit/delete short URLs
+  - Can use Admin endpoints
+  - Can create "Listed" URLs (i.e. URLs that are shows to non-logged in users)
+- Guest users:
+  - Can create/edit/delete short URLs
+  - Cannot use Admin endpoints
+  - Cannot create "Listed" URLs
+
+For non-logged in users, the home page will show a list of all "Listed" URLs. These will belong to any of the admin users. If a user is logged in, they will see a list of only the links they have created.
+
+### Request
+
+`POST /auth`
+
+    curl -X POST 'http://localhost:1337/auth' \
+        -H 'Content-Type: application/json' \
+        -d '{"name": "admin", "password": "password"}'
+
+### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
     { "success": true }
+
+## Get User
+
+Authenticated users can get their own information.
+
+### Request
+
+`GET /auth`
+
+    curl -X GET 'http://localhost:1337/auth' \
+        -H 'Authorization: Bearer jwt-token'
+
+### Response
+
+Headers:
+
+    { "token": jwt-token }
+
+Body:
+
+    {
+        "name": "admin",
+        "isAdmin": true,
+    }
