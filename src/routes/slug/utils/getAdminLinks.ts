@@ -1,45 +1,38 @@
-import { Types } from 'mongoose';
+import sub from 'date-fns/sub';
 
-import { User } from '@db/users';
 import UrlModel, { Url } from '@db/urls';
 
-type PopulatedUrl = Url & { _id: Types.ObjectId; user?: User };
+type UrlWithOpenAmt = Url & { openAmt: number };
 
 const getAdminLinks = async () => {
-  let links: PopulatedUrl[] = [];
+  let links: UrlWithOpenAmt[] = [];
   try {
-    links = await UrlModel.find({ isListed: true })
-      .populate<PopulatedUrl>('user', 'isAdmin')
-      .orFail()
-      .then((links) => {
-        return links
-          .filter((link) => link?.user?.isAdmin ?? false)
-          .map(
-            ({
-              _id,
-              name,
-              slug,
-              url,
-              isListed,
-              isFavorite,
-              description,
-              tags,
-              opens
-            }) => {
-              return {
-                _id,
-                name,
-                slug,
-                url,
-                isListed,
-                description,
-                isFavorite,
-                tags,
-                opens
-              };
+    links = await UrlModel.aggregate([
+      { $match: { isListed: true } },
+      {
+        $project: {
+          name: 1,
+          slug: 1,
+          url: 1,
+          isListed: 1,
+          isFavorite: { $ifNull: ['$isFavorite', false] },
+          description: 1,
+          tags: 1,
+          openAmt: {
+            $size: '$opens'
+          },
+          opens: {
+            $filter: {
+              input: '$opens',
+              as: 'opens',
+              cond: {
+                $gt: ['$$opens', sub(new Date(), { days: 29 }).toISOString()]
+              }
             }
-          );
-      });
+          }
+        }
+      }
+    ]);
   } catch (e) {
     links = [];
   }
