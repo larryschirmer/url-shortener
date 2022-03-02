@@ -16,6 +16,8 @@ import { getUserLinks, getAdminLinks, isInUse } from './utils';
 
 const isTag = (word: string) => word[0] === '#';
 
+type UrlWithOpenAmt = Url & { openAmt: number };
+
 const controller = {
   '/': {
     get: async (req: Request, res: Response, next: NextFunction) => {
@@ -23,7 +25,7 @@ const controller = {
 
       try {
         // fetch
-        let links: Url[] = [];
+        let links: UrlWithOpenAmt[] = [];
         if (user) links = await getUserLinks(user._id);
         else links = await getAdminLinks();
 
@@ -75,8 +77,9 @@ const controller = {
           isFavorite: newShortLink.isFavorite,
           description: newShortLink.description,
           tags: newShortLink.tags,
+          openAmt: 0,
           opens: newShortLink.opens
-        });
+        } as UrlWithOpenAmt);
       } catch (e) {
         next(parseError(e));
       }
@@ -132,7 +135,10 @@ const controller = {
           ['-user']
         );
 
-        res.json(updatedShortLink);
+        res.json({
+          ...updatedShortLink,
+          openAmt: updatedShortLink?.opens.length
+        } as UrlWithOpenAmt);
       } catch (e) {
         next(parseError(e));
       }
