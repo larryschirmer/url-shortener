@@ -12,12 +12,12 @@ const controller = {
         if (!shortLink?._id) throw new Error('slug is not in use');
 
         //resolution
+        res.redirect(shortLink.url);
         const currentTime = new Date().toISOString();
-        await updateLinkWhere(
+        updateLinkWhere(
           { slug },
           { $push: { opens: currentTime } }
         );
-        res.redirect(shortLink.url);
       } catch (e) {
         next(e);
       }
